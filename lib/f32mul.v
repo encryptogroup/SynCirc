@@ -1,0 +1,114 @@
+module __f32mul__main(
+  input wire [31:0] x,
+  input wire [31:0] y,
+  output wire [31:0] out
+);
+  // lint_off MULTIPLY
+  function automatic [47:0] umul48b_24b_x_24b (input reg [23:0] lhs, input reg [23:0] rhs);
+    begin
+      umul48b_24b_x_24b = lhs * rhs;
+    end
+  endfunction
+  // lint_on MULTIPLY
+  wire [22:0] x_fraction__3;
+  wire [7:0] x_bexp__1;
+  wire [22:0] y_fraction__3;
+  wire [7:0] y_bexp__1;
+  wire [23:0] x_fraction__4;
+  wire [23:0] y_fraction__4;
+  wire [23:0] x_fraction__6;
+  wire [23:0] y_fraction__5;
+  wire [8:0] add_779;
+  wire eq_780;
+  wire eq_781;
+  wire [47:0] fraction;
+  wire [9:0] exp;
+  wire [47:0] fraction__1;
+  wire [47:0] sticky;
+  wire [9:0] exp__1;
+  wire [47:0] fraction__2;
+  wire [9:0] exp__2;
+  wire [47:0] fraction__3;
+  wire [47:0] sticky__1;
+  wire [47:0] fraction__4;
+  wire [22:0] fraction__5;
+  wire greater_than_half_way;
+  wire [23:0] fraction__6;
+  wire do_round_up;
+  wire [23:0] add_822;
+  wire [23:0] fraction__7;
+  wire [9:0] add_826;
+  wire [9:0] exp__3;
+  wire [7:0] high_exp;
+  wire [7:0] high_exp__1;
+  wire [8:0] result_exp;
+  wire eq_836;
+  wire eq_838;
+  wire [8:0] result_exp__1;
+  wire has_inf_arg;
+  wire and_reduce_849;
+  wire is_subnormal;
+  wire has_0_arg;
+  wire is_result_nan;
+  wire x_sign__2;
+  wire y_sign__2;
+  wire [22:0] result_fraction;
+  wire result_sign;
+  wire [7:0] high_exp__2;
+  wire [22:0] result_fraction__3;
+  wire [22:0] nan_fraction;
+  wire result_sign__1;
+  wire [7:0] result_exp__4;
+  wire [22:0] result_fraction__4;
+  assign x_fraction__3 = x[22:0];
+  assign x_bexp__1 = x[30:23];
+  assign y_fraction__3 = y[22:0];
+  assign y_bexp__1 = y[30:23];
+  assign x_fraction__4 = {1'h0, x_fraction__3} | 24'h80_0000;
+  assign y_fraction__4 = {1'h0, y_fraction__3} | 24'h80_0000;
+  assign x_fraction__6 = x_fraction__4 & {24{x_bexp__1 != 8'h00}};
+  assign y_fraction__5 = y_fraction__4 & {24{y_bexp__1 != 8'h00}};
+  assign add_779 = {1'h0, x_bexp__1} + {1'h0, y_bexp__1};
+  assign eq_780 = x_bexp__1 == 8'h00;
+  assign eq_781 = y_bexp__1 == 8'h00;
+  assign fraction = umul48b_24b_x_24b(x_fraction__6, y_fraction__5);
+  assign exp = {1'h0, add_779} + 10'h381;
+  assign fraction__1 = fraction >> fraction[47];
+  assign sticky = {47'h0000_0000_0000, fraction[0]};
+  assign exp__1 = exp & {10{~(eq_780 | eq_781)}};
+  assign fraction__2 = fraction__1 | sticky;
+  assign exp__2 = exp__1 + {9'h000, fraction[47]};
+  assign fraction__3 = $signed(exp__2) <= $signed(10'h000) ? {1'h0, fraction__2[47:1]} : fraction__2;
+  assign sticky__1 = {47'h0000_0000_0000, fraction__2[0]};
+  assign fraction__4 = fraction__3 | sticky__1;
+  assign fraction__5 = fraction__4[45:23];
+  assign greater_than_half_way = fraction__4[22] & fraction__4[21:0] != 22'h00_0000;
+  assign fraction__6 = {1'h0, fraction__5};
+  assign do_round_up = greater_than_half_way | fraction__4[22] & fraction__4[21:0] == 22'h00_0000 & fraction__4[23];
+  assign add_822 = fraction__6 + 24'h00_0001;
+  assign fraction__7 = do_round_up ? add_822 : fraction__6;
+  assign add_826 = exp__2 + 10'h001;
+  assign exp__3 = fraction__7[23] ? add_826 : exp__2;
+  assign high_exp = 8'hff;
+  assign high_exp__1 = 8'hff;
+  assign result_exp = exp__3[8:0];
+  assign eq_836 = x_bexp__1 == high_exp;
+  assign eq_838 = y_bexp__1 == high_exp__1;
+  assign result_exp__1 = result_exp & {9{$signed(exp__3) > $signed(10'h000)}};
+  assign has_inf_arg = eq_836 & x_fraction__3 == 23'h00_0000 | eq_838 & y_fraction__3 == 23'h00_0000;
+  assign and_reduce_849 = &result_exp__1[7:0];
+  assign is_subnormal = $signed(exp__3) <= $signed(10'h000);
+  assign has_0_arg = eq_780 | eq_781;
+  assign is_result_nan = eq_836 & x_fraction__3 != 23'h00_0000 | eq_838 & y_fraction__3 != 23'h00_0000 | has_0_arg & has_inf_arg;
+  assign x_sign__2 = x[31:31];
+  assign y_sign__2 = y[31:31];
+  assign result_fraction = fraction__7[22:0];
+  assign result_sign = x_sign__2 ^ y_sign__2;
+  assign high_exp__2 = 8'hff;
+  assign result_fraction__3 = result_fraction & {23{~(has_inf_arg | result_exp__1[8] | and_reduce_849 | is_subnormal)}};
+  assign nan_fraction = 23'h40_0000;
+  assign result_sign__1 = ~is_result_nan & result_sign;
+  assign result_exp__4 = is_result_nan | has_inf_arg | result_exp__1[8] | and_reduce_849 ? high_exp__2 : result_exp__1[7:0];
+  assign result_fraction__4 = is_result_nan ? nan_fraction : result_fraction__3;
+  assign out = {result_sign__1, result_exp__4, result_fraction__4};
+endmodule
