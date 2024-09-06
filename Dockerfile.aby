@@ -1,0 +1,14 @@
+FROM ubuntu:22.04 as build
+
+RUN apt-get update -y
+RUN apt-get install -y build-essential cmake libgmp-dev libssl-dev doxygen ninja-build curl
+
+WORKDIR /root
+RUN curl -LS https://archives.boost.io/release/1.66.0/source/boost_1_66_0.tar.gz | tar xz
+RUN cd boost_1_66_0 && ./bootstrap.sh && ./b2 install
+
+COPY aby aby
+
+RUN cd aby && mkdir build && cd build && cmake .. -DCMAKE_BUILD_TYPE=Release -DABY_BUILD_EXE=On && make
+
+ENV PATH="$PATH:/root/aby/build/bin"
