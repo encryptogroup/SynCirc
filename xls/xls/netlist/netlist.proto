@@ -1,0 +1,132 @@
+// Copyright 2020 The XLS Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto2";
+
+package xls.netlist;
+
+enum CellKindProto {
+  INVALID = 0;
+  FLOP = 1;
+  INVERTER = 2;
+  BUFFER = 3;
+  NAND = 4;
+  NOR = 5;
+  MULTIPLEXER = 6;
+  XOR = 7;
+  OTHER = 8;
+}
+
+// Proto definition of the "statetable" Group, defined in section 2.1.4 of the
+// Liberty file standard (2007.03).
+// A statetable captures internal state transitions for potentially
+// sequential cells (as opposed to combinational). Low/high/dontcare are
+// potential input values, while low/high and the rest are potential results.
+// An example state table with one row:
+//  A B : C : C
+//  L - : L : H
+//  - - : - : -:
+// This indicates that if A is low and C is low, on the next clock, C will be
+// high, and for all other inputs, C will be low (obviously, this table isn't
+// particularly useful, but illustrates the general idea).
+// Please keep this decl in sync with that in cell_library.h!
+enum StateTableSignalProto {
+  STATE_TABLE_SIGNAL_INVALID = 0;
+  STATE_TABLE_SIGNAL_LOW = 1;
+  STATE_TABLE_SIGNAL_HIGH = 2;
+  STATE_TABLE_SIGNAL_DONTCARE = 3;
+  // State table value H/L.
+  STATE_TABLE_SIGNAL_HIGH_OR_LOW = 4;
+  // State table value L/H.
+  STATE_TABLE_SIGNAL_LOW_OR_HIGH = 5;
+  STATE_TABLE_SIGNAL_RISING = 6;
+  STATE_TABLE_SIGNAL_FALLING = 7;
+  STATE_TABLE_SIGNAL_NOT_RISING = 8;
+  STATE_TABLE_SIGNAL_NOT_FALLING = 9;
+  STATE_TABLE_SIGNAL_NOCHANGE = 10;
+  STATE_TABLE_SIGNAL_X = 11;
+}
+
+message StateTableRow {
+  // The values of the external inputs into this cell.
+  map<string, StateTableSignalProto> input_signals = 1;
+
+  // The current internal signal values of this cell.
+  map<string, StateTableSignalProto> internal_signals = 2;
+
+  // The resulting value of the internal signals when presented with the above
+  // inputs.
+  map<string, StateTableSignalProto> next_internal_signals = 3;
+}
+
+message StateTableProto {
+  // The names of the input signals to this table - this will be the
+  // bit-ordering of the values in the table rows themselves. For example, if
+  // inputs are [i0, i1], in that order, then if a table entry has the key value
+  // of "LH", that indicates that i1, the second entry, is high and i0 is low.
+  repeated string input_names = 1;
+
+  // The name of the internal signal controlled by this table.
+  //
+  // IMPORTANT: Internal pins (with direction "internal") may have the attribute
+  // "internal_field", which maps the pin name to a _different_name_ in the
+  // statetable. This is not yet handled, and is apparently extremely uncommon,
+  // but we should be aware in case we do encounter it.
+  repeated string internal_names = 2;
+
+  // Valid entries to the table. Example (using the inputs above)
+  // LH -> true: output_name will be high if i0 is low and i1 is high.
+  // HH -> false: output_name will be low if i0 is high and i1 is high.
+  // Any unspecified entries are invalid - should not be encountered in current
+  // models.
+  repeated StateTableRow rows = 3;
+}
+
+message OutputPinProto {
+  // Name of this output pin.
+  optional string name = 1;
+
+  // Function calculated on this pin, as a string in the format described under
+  // "function attribute" in the Liberty file format.
+  // This currently encapsulates both the "function" and "state_function"
+  // attributes, as we currently have no need to handle them separately. If that
+  // changes, we'll grow a oneof here.
+  optional string function = 2;
+}
+
+message OutputPinListProto {
+  repeated OutputPinProto pins = 1;
+}
+
+message CellLibraryEntryProto {
+  // The "kind" of this cell library entry. For most purposes (i.e., unless you
+  // _know_ otherwise), this should be OTHER.
+  optional CellKindProto kind = 1;
+
+  // The name of this entry.
+  optional string name = 2;
+
+  // The names of the input pins to this cell.
+  repeated string input_names = 3;
+
+  // The list of outputs from this cell.
+  optional OutputPinListProto output_pin_list = 4;
+
+  // The state table defining internal pin transitions, if applicable.
+  optional StateTableProto state_table = 5;
+}
+
+message CellLibraryProto {
+  repeated CellLibraryEntryProto entries = 1;
+}

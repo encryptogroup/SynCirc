@@ -1,0 +1,86 @@
+site_name: "XLS: Accelerated HW Synthesis"
+repo_url: "https://github.com/google/xls/"
+site_url: "https://google.github.io/xls/"
+edit_uri: 'tree/main/docs_src/'
+docs_dir: "docs_src/"
+site_dir: "docs/"
+theme:
+  name: "material"
+nav:
+  - Overview: 'README.md'
+  - Tutorials:
+    - Overview: 'tutorials/index.md'
+    - DSLX:
+      - Hello, XLS!: 'tutorials/hello_xls.md'
+      - Basic logic: 'tutorials/float_to_int.md'
+      - Intro to parameterics: 'tutorials/intro_to_parametrics.md'
+      - For expressions: 'tutorials/crc32.md'
+      - Enumerate and match: 'tutorials/prefix_scan.md'
+    - XLS[cc]:
+      - Overview: 'tutorials/xlscc_overview.md'
+      - Channels: 'tutorials/xlscc_channels.md'
+      - State: 'tutorials/xlscc_state.md'
+  - IR:
+    - Semantics: 'ir_semantics.md'
+    - Optimizations: 'optimizations.md'
+    - Scheduling:
+      - Overview: 'scheduling.md'
+      - Delay Estimation: 'delay_estimation.md'
+    - Visualizer: 'ir_visualization.md'
+    - Native JIT:
+      - Overview: 'ir_jit.md'
+      - Data Layout: 'data_layout.md'
+    - Formal: 'solvers.md'
+  - DSLX:
+    - Reference: 'dslx_reference.md'
+    - Standard Library : 'dslx_std.md'
+    - Floating Point: 'floating_point.md'
+    - Fuzzer: 'fuzzer.md'
+    - Interpreter: 'dslx_bytecode_interpreter.md'
+  - Code Generation:
+    - VAST: 'vast.md'
+  - Tools:
+    - Build System: 'build_system.md'
+    - Bazel Rules And Macros: 'bazel_rules_macros.md'
+    - Quick Start: 'tools_quick_start.md'
+    - Listing: 'tools.md'
+    - Interpreters: 'interpreters.md'
+  - Development:
+    - Contributing: 'contributing.md'
+    - Style Guide: 'xls_style.md'
+    - Adding a new IR operation: 'adding_ir_operation.md'
+  - NoC:
+    - Overview: 'xls_noc_readme.md'
+    - Topologies:
+      - Overview: 'xls_noc_topologies.md'
+      - Dimension Order: 'xls_noc_dimension_order_topology.md'
+      - Tree: 'xls_noc_tree_topology.md'
+      - k-ary n-fly Butterfly: 'xls_noc_butterfly_topology.md'
+      - Fully Connected: 'xls_noc_fully_connected_topology.md'
+      - Star: 'xls_noc_star_topology.md'
+    - Glossary: 'xls_noc_glossary.md'
+markdown_extensions:
+  - mdx_truly_sane_lists
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      extend_pygments_lang:
+        - name: dslx
+          lang: rust
+        # dslx-snippet indicates the code block doesn't need to parse and
+        # typecheck.
+        - name: dslx-snippet
+          lang: rust
+        # dslx-bad indicates the code block is showing something wrong.
+        - name: dslx-bad
+          lang: rust
+  - pymdownx.arithmatex:
+        generic: true
+  - footnotes
+  - attr_list
+extra_javascript:
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+plugins:
+  - exclude:
+      glob: BUILD
+  - search

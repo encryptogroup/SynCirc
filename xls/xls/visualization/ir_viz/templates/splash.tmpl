@@ -1,0 +1,102 @@
+<html>
+  <link rel="stylesheet" href="https://www.gstatic.com/external_hosted/twitter_bootstrap_css/v4/bootstrap.css">
+  <link rel="stylesheet" href="/static/ir_graph.css">
+  <title>XLS IR Visualization</title>
+  <body>
+    <h2 class="ml-3">
+      XLS IR Visualization
+    </h2>
+    <div id="outer" class="row container-fluid">
+      <!-- Split screen evenly for smaller screens (size class large and smaller), -->
+      <!-- and split 5-7 for larger screens. Number and matching number in rhs -->
+      <!-- element should sum to 12  -->
+      <div id="lhs" class="col-lg-6 col-xl-5 ">
+        <div class="row">
+          <div class="col">
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text">Upload</span>
+              </div>
+              <div class="custom-file">
+                <input type="file" class="custom-file-input" id="ir-upload">
+                <label class="custom-file-label" for="ir-upload">Choose file</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        {%- if use_benchmark_examples -%}
+        <div class="form-group row mx-1">
+          <select class="col-7 form-control" id="example-select"
+                  onClick="selectBenchmark(this.value)">
+            <option value="">Benchmarks...</option>
+            {% for example in examples %}
+            <option value="{{example}}">{{example}}</option>
+            {% endfor %}
+          </select>
+          <select class="col-2 form-control" id="opt-level-select"
+                  onClick="selectBenchmarkOptLevel(this.value)">
+            <option value="">Opt level...</option>
+            <option value="0">0</option>
+            <option value="inline-only">inline-only</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+          </select>
+          <div class="col-3">
+            <button id="load-example-btn" type="button"
+                    class="btn btn-primary disabled"
+                    onClick="loadExampleButtonHandler()">
+              Load
+            </button>
+          </div>
+        </div>
+        {%- else -%}
+        <select class="row form-control ml-1" id="ir-file-select"
+                onClick="selectIrFile(this.value)">
+          <option value="">IR files...</option>
+          {% for example in examples %}
+          <option value="{{example}}">{{example}}</option>
+          {% endfor %}
+        </select>
+        {%- endif -%}
+        <div class="form-group row mx-1">
+          <label for="function-select" class="col-3 col-form-label">function/proc/block:</label>
+          <select class="col-9 form-control" id="function-select">
+          </select>
+        </div>
+        <div class="row mx-1">
+          <div contenteditable="true" spellcheck="false" id="ir-source-text" class="source-text">{{preloaded_ir}}</div>
+        </div>
+        <div id="source-status" class="alert alert-dark" role="alert"></div>
+        <div id="bottom-pane">
+          <div class="row">
+            <div class="col">
+              <button id="view-graph-btn" type="button" class="btn btn-primary" disabled>View Graph</button>
+              <button id="view-critical-path-btn" type="button" class="btn btn-primary" disabled>Critical Path</button>
+            </div>
+            <div class="col">
+              <div class="custom-control custom-switch">
+                <input type="checkbox" class="custom-control-input" id="only-selected-checkbox" checked>
+                <label class="custom-control-label" for="only-selected-checkbox">Show only selected nodes</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- lhs -->
+      <div id="rhs" class="col-lg-6 col-xl-7">
+        <div id="node-metadata" class="node-metadata-text text-truncate"></div>
+        <div id="graph">
+        </div>
+      </div><!-- rhs -->
+    </div>
+  </body>
+  {% for url in third_party_scripts %}
+  <script src="{{ url }}"></script>
+  {% endfor %}
+  <script>
+    function setInnerHtml(elem, content) {
+      elem.innerHTML = content;
+    }
+  </script>
+  <script src="/static/js_compiled.js"></script>
+</html>

@@ -1,0 +1,55 @@
+#ifndef XLS_IR_NODES_
+#define XLS_IR_NODES_
+
+#include <cstdint>
+#include <string>
+
+#include "absl/status/statusor.h"
+#include "absl/types/span.h"
+#include "xls/ir/format_strings.h"
+#include "xls/ir/lsb_or_msb.h"
+#include "xls/ir/node.h"
+#include "xls/ir/op.h"
+#include "xls/ir/source_location.h"
+#include "xls/ir/register.h"
+#include "xls/ir/type.h"
+#include "xls/ir/value.h"
+
+namespace xls {
+
+class Function;
+class Instantiation;
+
+struct SliceData {
+  int64_t start;
+  int64_t width;
+};
+
+{% for op_class in spec.OpClass.kinds.values() -%}
+class {{ op_class.name }} : public Node {
+ public:
+  {{ op_class.name }}({{ op_class.constructor_args_str() }});
+
+  absl::StatusOr<Node*> CloneInNewFunction(
+    absl::Span<Node* const> new_operands,
+    FunctionBase* new_function) const override;
+{% for method in op_class.methods() -%}
+{{ method.return_cpp_type }} {{ method.name }}({{ method.params }}) {%if method.is_const %} const{% endif %} 
+  {% if method.expression %}  {% if method.expression_is_body %} { {{ method.expression }} } {% else %} { return {{ method.expression }}; }  {% endif %}
+  {% else %}; {% endif %}
+{% endfor -%}
+{%- if op_class.data_members() %}
+  bool IsDefinitelyEqualTo(const Node* other) const override;
+
+ private:
+{% for member in op_class.data_members() -%}
+{{ member.cpp_type }} {{ member.name }};
+{% endfor %}
+{%- endif -%}
+};
+
+{% endfor %}
+
+}  // namespace xls
+
+#endif  // XLS_IR_NODES_

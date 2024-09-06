@@ -1,0 +1,1880 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://google.github.io/xls/fuzzer/">
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.3.1, mkdocs-material-8.4.2">
+    
+    
+      
+        <title>Fuzzer - XLS: Accelerated HW Synthesis</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.69437709.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.cbb835fc.min.css">
+        
+      
+      
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#xls-fuzzer" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="XLS: Accelerated HW Synthesis" class="md-header__button md-logo" aria-label="XLS: Accelerated HW Synthesis" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            XLS: Accelerated HW Synthesis
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Fuzzer
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/google/xls/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.1.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="XLS: Accelerated HW Synthesis" class="md-nav__button md-logo" aria-label="XLS: Accelerated HW Synthesis" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    XLS: Accelerated HW Synthesis
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/google/xls/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.1.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          Tutorials
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Tutorials" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Tutorials
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_2" type="checkbox" id="__nav_2_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_2">
+          DSLX
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="DSLX" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_2">
+          <span class="md-nav__icon md-icon"></span>
+          DSLX
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/hello_xls/" class="md-nav__link">
+        Hello, XLS!
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/float_to_int/" class="md-nav__link">
+        Basic logic
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/intro_to_parametrics/" class="md-nav__link">
+        Intro to parameterics
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/crc32/" class="md-nav__link">
+        For expressions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/prefix_scan/" class="md-nav__link">
+        Enumerate and match
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_3" type="checkbox" id="__nav_2_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_3">
+          XLS[cc]
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="XLS[cc]" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_3">
+          <span class="md-nav__icon md-icon"></span>
+          XLS[cc]
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/xlscc_overview/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/xlscc_channels/" class="md-nav__link">
+        Channels
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/xlscc_state/" class="md-nav__link">
+        State
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          IR
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="IR" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          IR
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ir_semantics/" class="md-nav__link">
+        Semantics
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../optimizations/" class="md-nav__link">
+        Optimizations
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3" type="checkbox" id="__nav_3_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_3">
+          Scheduling
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Scheduling" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_3">
+          <span class="md-nav__icon md-icon"></span>
+          Scheduling
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scheduling/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../delay_estimation/" class="md-nav__link">
+        Delay Estimation
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ir_visualization/" class="md-nav__link">
+        Visualizer
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_5" type="checkbox" id="__nav_3_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_5">
+          Native JIT
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Native JIT" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_5">
+          <span class="md-nav__icon md-icon"></span>
+          Native JIT
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ir_jit/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data_layout/" class="md-nav__link">
+        Data Layout
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../solvers/" class="md-nav__link">
+        Formal
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          DSLX
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="DSLX" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          DSLX
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dslx_reference/" class="md-nav__link">
+        Reference
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dslx_std/" class="md-nav__link">
+        Standard Library
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../floating_point/" class="md-nav__link">
+        Floating Point
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Fuzzer
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Fuzzer
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#crashers-directory" class="md-nav__link">
+    Crashers Directory
+  </a>
+  
+    <nav class="md-nav" aria-label="Crashers Directory">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#reproducers" class="md-nav__link">
+    Single-file reproducers
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#minimization" class="md-nav__link">
+    IR minimization
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summaries" class="md-nav__link">
+    Summaries
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging" class="md-nav__link">
+    Debugging a failing sample
+  </a>
+  
+    <nav class="md-nav" aria-label="Debugging a failing sample">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#debugging-a-tool-crash" class="md-nav__link">
+    Debugging a tool crash
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#result-miscomparison-unoptimized-ir" class="md-nav__link">
+    Result miscomparison: unoptimized IR
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#result-miscomparison-optimized-ir" class="md-nav__link">
+    Result miscomparison: optimized IR
+  </a>
+  
+    <nav class="md-nav" aria-label="Result miscomparison: optimized IR">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#debugging-the-llvm-jit" class="md-nav__link">
+    Debugging the LLVM JIT
+  </a>
+  
+    <nav class="md-nav" aria-label="Debugging the LLVM JIT">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#building-llvm-tools" class="md-nav__link">
+    Building LLVM tools
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#isolating-the-bug" class="md-nav__link">
+    Isolating the bug
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#instcombine" class="md-nav__link">
+    Instcombine
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#evaluating-llvm-ir" class="md-nav__link">
+    Evaluating LLVM IR
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#building-llvm-at-head" class="md-nav__link">
+    Building LLVM at head
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#result-miscomparison-simulated-verilog" class="md-nav__link">
+    Result miscomparison: simulated Verilog
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dslx_bytecode_interpreter/" class="md-nav__link">
+        Interpreter
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          Code Generation
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Code Generation" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          Code Generation
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../vast/" class="md-nav__link">
+        VAST
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6">
+          Tools
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Tools" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          Tools
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../build_system/" class="md-nav__link">
+        Build System
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bazel_rules_macros/" class="md-nav__link">
+        Bazel Rules And Macros
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tools_quick_start/" class="md-nav__link">
+        Quick Start
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tools/" class="md-nav__link">
+        Listing
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../interpreters/" class="md-nav__link">
+        Interpreters
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7">
+          Development
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Development" data-md-level="1">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          Development
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing/" class="md-nav__link">
+        Contributing
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../xls_style/" class="md-nav__link">
+        Style Guide
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adding_ir_operation/" class="md-nav__link">
+        Adding a new IR operation
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_8" type="checkbox" id="__nav_8" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_8">
+          NoC
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="NoC" data-md-level="1">
+        <label class="md-nav__title" for="__nav_8">
+          <span class="md-nav__icon md-icon"></span>
+          NoC
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../xls_noc_readme/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_8_2" type="checkbox" id="__nav_8_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_8_2">
+          Topologies
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Topologies" data-md-level="2">
+        <label class="md-nav__title" for="__nav_8_2">
+          <span class="md-nav__icon md-icon"></span>
+          Topologies
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../xls_noc_topologies/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../xls_noc_dimension_order_topology/" class="md-nav__link">
+        Dimension Order
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../xls_noc_tree_topology/" class="md-nav__link">
+        Tree
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../xls_noc_butterfly_topology/" class="md-nav__link">
+        k-ary n-fly Butterfly
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../xls_noc_fully_connected_topology/" class="md-nav__link">
+        Fully Connected
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../xls_noc_star_topology/" class="md-nav__link">
+        Star
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../xls_noc_glossary/" class="md-nav__link">
+        Glossary
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#crashers-directory" class="md-nav__link">
+    Crashers Directory
+  </a>
+  
+    <nav class="md-nav" aria-label="Crashers Directory">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#reproducers" class="md-nav__link">
+    Single-file reproducers
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#minimization" class="md-nav__link">
+    IR minimization
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summaries" class="md-nav__link">
+    Summaries
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging" class="md-nav__link">
+    Debugging a failing sample
+  </a>
+  
+    <nav class="md-nav" aria-label="Debugging a failing sample">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#debugging-a-tool-crash" class="md-nav__link">
+    Debugging a tool crash
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#result-miscomparison-unoptimized-ir" class="md-nav__link">
+    Result miscomparison: unoptimized IR
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#result-miscomparison-optimized-ir" class="md-nav__link">
+    Result miscomparison: optimized IR
+  </a>
+  
+    <nav class="md-nav" aria-label="Result miscomparison: optimized IR">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#debugging-the-llvm-jit" class="md-nav__link">
+    Debugging the LLVM JIT
+  </a>
+  
+    <nav class="md-nav" aria-label="Debugging the LLVM JIT">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#building-llvm-tools" class="md-nav__link">
+    Building LLVM tools
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#isolating-the-bug" class="md-nav__link">
+    Isolating the bug
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#instcombine" class="md-nav__link">
+    Instcombine
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#evaluating-llvm-ir" class="md-nav__link">
+    Evaluating LLVM IR
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#building-llvm-at-head" class="md-nav__link">
+    Building LLVM at head
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#result-miscomparison-simulated-verilog" class="md-nav__link">
+    Result miscomparison: simulated Verilog
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+  <a href="https://github.com/google/xls/tree/main/docs_src/fuzzer.md" title="Edit this page" class="md-content__button md-icon">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
+  </a>
+
+
+
+<h1 id="xls-fuzzer">XLS Fuzzer</h1>
+<div class="toc">
+<ul>
+<li><a href="#xls-fuzzer">XLS Fuzzer</a><ul>
+<li><a href="#crashers-directory">Crashers Directory</a><ul>
+<li><a href="#reproducers">Single-file reproducers</a></li>
+</ul>
+</li>
+<li><a href="#minimization">IR minimization</a></li>
+<li><a href="#summaries">Summaries</a></li>
+<li><a href="#debugging">Debugging a failing sample</a><ul>
+<li><a href="#debugging-a-tool-crash">Debugging a tool crash</a></li>
+<li><a href="#result-miscomparison-unoptimized-ir">Result miscomparison: unoptimized IR</a></li>
+<li><a href="#result-miscomparison-optimized-ir">Result miscomparison: optimized IR</a><ul>
+<li><a href="#debugging-the-llvm-jit">Debugging the LLVM JIT</a><ul>
+<li><a href="#building-llvm-tools">Building LLVM tools</a></li>
+<li><a href="#isolating-the-bug">Isolating the bug</a></li>
+<li><a href="#instcombine">Instcombine</a></li>
+<li><a href="#evaluating-llvm-ir">Evaluating LLVM IR</a></li>
+<li><a href="#building-llvm-at-head">Building LLVM at head</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#result-miscomparison-simulated-verilog">Result miscomparison: simulated Verilog</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<p>To execute the XLS fuzz driver simply run a command line like the following:</p>
+<div class="highlight"><pre><span></span><code>bazel run -c opt \
+  //xls/fuzzer:run_fuzz_multiprocess \
+  -- --crash_path=/tmp/crashers-$(date +&#39;%Y-%m-%d&#39;) --seed=0 --duration=8h
+</code></pre></div>
+<p>The XLS fuzzer generates a sequence of randomly generated DSLX functions and a
+set of random inputs to each function often with interesting bit patterns.</p>
+<p>Given that stimulus, the fuzz driver performs the following actions some of
+which may be disabled/enabled via flags (run with <code>--help</code> for more details):</p>
+<ul>
+<li>Runs the DSLX program through the DSLX interpreter with the batch of
+    arguments</li>
+<li>Converts the DSLX program to IR</li>
+<li>Optimizes the converted IR</li>
+<li>Interprets the pre-optimized and optimized IR with the batch of arguments</li>
+<li>Generates the Verilog from the IR with randomly selected codegen options</li>
+<li>Simulates the generated Verilog using the batch of arguments</li>
+<li>Performs a multi-way comparison of the DSLX interpreter results, the
+    pre-optimized IR interpreter results, post-optimized IR interpreter results,
+    and the simulator results</li>
+<li>If an issue is observed, the fuzz driver attempts to minimize the IR that
+    causes an issue to occur.</li>
+</ul>
+<p>The above actions are coordinated and run by the
+<a href="https://github.com/google/xls/tree/main/xls/fuzzer/sample_runner.py">SampleRunner</a> class.
+Many actions are performed by invoking a separate binary which isolates any
+crashes.</p>
+<p>When miscompares in results occur or the generated function crashes part of XLS,
+all artifacts generated by the fuzzer for that sample are written into a
+uniquely-named subdirectory under the <code>--crash_path</code> given in the command line.
+The fuzzer also writes a <em>crasher</em> file which is a single file for reproducing
+the issue. See <a href="#debugging">below</a> for instructions on debugging a failing
+sample.</p>
+<h2 id="crashers-directory">Crashers Directory</h2>
+<p>The crashers directory includes a subdirectory created for each failing sample.
+To avoid collisions the subdirectory is named using a hash of the DSLX code.
+Each crasher subdirectory has the following contents:</p>
+<div class="highlight"><pre><span></span><code>$ ls /tmp/crashers-2019-06-25/05adbd50
+args.txt                   ir_converter_main.stderr   run.sh
+cl.txt                     ir_minimizer.options.json  sample.ir
+crasher_2020-04-23_9b05.x  ir_minimizer_test.sh       sample.ir.results
+eval_ir_main.stderr        options.json               sample.x
+exception.txt              opt_main.stderr            sample.x.results
+</code></pre></div>
+<p>The directory includes the problematic DSLX sample (<code>sample.x</code>) and the input
+arguments (<code>args.txt</code>) as well as all artifacts generated and stderr output
+emitted by the various utilities invoked to test the sample. Notable files
+include:</p>
+<ul>
+<li><code>options.json</code> : Options used to run the sample.</li>
+<li><code>sample.ir</code> : Unoptimized IR generated from the DSLX sample.</li>
+<li><code>sample.opt.ir</code> : IR after optimizations.</li>
+<li><code>sample.v</code> : Generated Verilog.</li>
+<li><code>*.results</code> : The results (numeric values) produced by interpreting or
+    simulating the respective input (DSLX, IR, or Verilog).</li>
+<li><code>exception.txt</code> : The exception raised when running the sample. Typically
+    this will indicate either a result miscomparison or a tool return non-zero
+    status (for example, the IR optimizer crashed).</li>
+<li><code>crasher_*.x</code>: A single file reproducer which includes the DSLX code,
+    arguments, and options. See <a href="#reproducers">below</a> for details.</li>
+</ul>
+<p>Typically the exact nature of the failure can be identified by reading the file
+<code>exception.txt</code> and possibly the stderr outputs of the various tools.</p>
+<p>The fuzzer can optionally produce a minimized IR reproduction of the problem.
+This will be written to <code>minimized.ir</code>. See <a href="#minimization">below</a> for details.</p>
+<h3 id="reproducers">Single-file reproducers</h3>
+<p>When the fuzzer encounters an issue it will create a single-file reproducer:</p>
+<div class="highlight"><pre><span></span><code>--- Worker 14 observed an exception, noting
+--- Worker 14 noted crasher #1 for sampleno 42 at /tmp/crashers/095fb405
+</code></pre></div>
+<p>Copying that file to the directory <code>//xls/fuzzer/crashers</code> will
+automatically create a bazel test target for it and add it to the regression
+suite. Tests can also be added as known failures in
+<code>//xls/fuzzer/build_defs.bzl</code> as they're being triaged /
+investigated like so:</p>
+<div class="highlight"><pre><span></span><code>generate_crasher_regression_tests(
+    srcs = glob([&quot;crashers/*&quot;]),
+    prefix = &quot;xls/fuzzer&quot;,
+    # TODO(xls-team): 2019-06-30 Triage and fix these.
+    failing = [
+        &quot;crashers/crasher_2019-06-29_129987.x&quot;,
+        &quot;crashers/crasher_2019-06-29_402110.x&quot;,
+    ],
+)
+</code></pre></div>
+<p>Known-failures are marked as manual and excluded from continuous testing.</p>
+<p>To run the regression suite:</p>
+<div class="highlight"><pre><span></span><code>bazel test //xls/fuzzer:all
+</code></pre></div>
+<p>To run the regression suite including known-failures, run the regression target
+directly:</p>
+<div class="highlight"><pre><span></span><code>bazel test //xls/fuzzer:regression_tests
+</code></pre></div>
+<p>To reproduce from that single-file reproducer there is a command line tool:</p>
+<div class="highlight"><pre><span></span><code>bazel run //xls/fuzzer/run_crasher -- \
+  crasher_2019-06-26_3354.x
+</code></pre></div>
+<h2 id="minimization">IR minimization</h2>
+<p>By default the fuzzer attempts to generate a minimal IR reproducer for the
+problem identified by the DSLX sample. Starting with the unoptimized IR the
+fuzzer invokes <code>ir_minimizer_main</code> to reduce the size of the input IR. It uses
+various simplification strategies to minimize the number of nodes in the IR. See
+the usage description in the tool source code for detailed information.</p>
+<p>The minimized IR is written to a file <code>minimized.ir</code> in the crasher directory
+for the sample. Note that minimization is only possible if the problem (crash,
+result miscomparison, etc.) occurs <em>after</em> conversion from DSLX to XLS IR.</p>
+<h2 id="summaries">Summaries</h2>
+<p>To monitor progress of the fuzzer and to determine op coverage the fuzzer can
+optionally (with <code>--summary_path</code>) write summary information to files. The
+summary files are Protobuf files containing the proto <code>SampleSummaryProto</code>
+defined in <code>//xls/fuzzer/sample_summary.proto</code>. The summary
+information about the IR generated from the DSLX sample such as the number and
+type of each IR op as well as the bit width and number of operands.</p>
+<p>The summary information also includes a timing breakdown of the various
+operations performed for each sample (sample generation, IR conversion, etc).
+This can be used to identify performance bottlenecks in the fuzzer.</p>
+<p>The summaries can be read with the tool
+<code>//xls/fuzzer/read_summary_main</code>. See usage description in the code
+for more details.</p>
+<h2 id="debugging">Debugging a failing sample</h2>
+<p>A generated sample can fail in one of two ways: a tool crash or a result
+miscomparison. A tool crash occurred if one of the tools invoked by the fuzzer
+(e.g., <code>opt_main</code> which optimizes the IR) returned a non-zero status. A result
+miscomparison occurred if there is not perfect correspondence between the
+results produced by various ways in which the generated function is evaluated:</p>
+<ol>
+<li>Interpreted DSLX</li>
+<li>Evaluated unoptimized IR</li>
+<li>Evaluated optimized IR</li>
+<li>Simulation of the generated (System)Verilog</li>
+</ol>
+<p>Generally, the results produced by the interpretation of the DSLX serves are the
+reference results for comparisons.</p>
+<p>To identify the underlying cause of the sample failure inspect the
+<code>exception.txt</code> file in the crasher directory. The file contains the text of the
+exception raised in <code>SampleRunner</code> which clearly identifies the kind of failure
+(result miscomparison or tool crash) and details about which evaluation resulted
+in a miscompare or which tool crashed, respectively. Consult the following
+sections on how to debug particular kinds of failures.</p>
+<h3 id="debugging-a-tool-crash">Debugging a tool crash</h3>
+<p>The <code>exception.txt</code> file includes the invocation of the tool for reproducing the
+failure. Generally, this is a straightforward debugging process.</p>
+<p>If the failing tool is the IR optimizer binary <code>opt_main</code> the particular pass
+causing the failure should be in the backtrace. To retrieve the input to this
+pass, run <code>opt_main</code> with <code>--ir_dump_path</code> to dump the IR between each pass. The
+last IR file produced (the files are numbered sequentially) is the input to the
+failing pass.</p>
+<h3 id="result-miscomparison-unoptimized-ir">Result miscomparison: unoptimized IR</h3>
+<p>The evaluation of the unoptimized IR is the first point at which result
+comparison occurs (DSLX interpretation versus unoptimized IR evaluation). A
+miscomparison here can indicate a bug in one of several places:</p>
+<ol>
+<li>DSLX interpreter</li>
+<li>DSLX to IR conversion</li>
+<li>IR interpreter or IR JIT. The error message in <code>exception.txt</code> indicates
+    whether the JIT or the interpreter was used.</li>
+</ol>
+<p>To help narrow this down, the IR interpreter can be compared against the JIT
+with the <code>eval_ir_main</code> tool:</p>
+<div class="highlight"><pre><span></span><code>  eval_ir_main --test_llvm_jit --input_file=args.txt sample.ir
+</code></pre></div>
+<p>This runs both the JIT and the interpreter on the unoptimized IR file
+(<code>sample.ir</code>) using the arguments in <code>args.txt</code> and compares the results. If
+this is successful, then likely the IR interpreter and the JIT are correct and
+problem lies earlier in the pipeline (DSLX interpretation or DSLX to IR
+conversion). Otherwise, there is definitely a bug in either the interpreter or
+the JIT as their results should <em>always</em> be equal.</p>
+<p>If a minimized IR file exists (<code>minimized.ir</code>) this may be a better starting
+point for isolating the failure.</p>
+<h3 id="result-miscomparison-optimized-ir">Result miscomparison: optimized IR</h3>
+<p>This can indicate a bug in IR evaluation (interpreter or JIT) or in the
+optimizer. In this case, a comparison of the evaluation of the unoptimized IR
+against the DSLX interpreter has already succeeds so DSLX interpretation or
+conversion is unlikely to be the underlying cause.</p>
+<p>As with miscomparison involving the <em>unoptimized</em> IR, <code>eval_ir_main</code> can be used
+to compare the JIT results against the interpreter results:</p>
+<div class="highlight"><pre><span></span><code>  eval_ir_main --test_llvm_jit --input_file=args.txt sample.opt.ir
+</code></pre></div>
+<p>If the above invocation fails there is a bug in the JIT or the interpreter.
+Otherwise, there may be a bug in the optimizer. The tool <code>eval_ir_main</code> can help
+isolate the problematic optimization pass by running with the options
+<code>--optimize_ir</code> and <code>--eval_after_each_pass</code>. With these flags, the tool runs
+the optimization pipeline on the given IR and evaluates the IR after each pass
+is run. The first pass which results in a miscompare against the unoptimized
+input IR is flagged. Invocation:</p>
+<div class="highlight"><pre><span></span><code>  eval_ir_main --input_file=args.txt \
+    --optimize_ir \
+    --eval_after_each_pass \
+    sample.ir
+</code></pre></div>
+<h4 id="debugging-the-llvm-jit">Debugging the LLVM JIT</h4>
+<p>To help isolate bugs in the JIT, LLVM's optimization level can be set using the
+<code>--llvm_opt_level</code> flag:</p>
+<div class="highlight"><pre><span></span><code>  eval_ir_main --test_llvm_jit \
+    --llvm_opt_level=0 \
+    --input_file=args.txt sample.opt.ir
+</code></pre></div>
+<p>If the results match (pass) with the optimization level set to zero but fail
+with the default optimization level of 3, there is likely a bug in the LLVM
+optimizer or the XLS-generated LLVM program has undefined behavior.</p>
+<p>Unoptimized and optimized LLVM IR are dumped by the JIT with vlog level of 2 or
+higher, and the assembly is dumped at level 3 or higher. For example:</p>
+<div class="highlight"><pre><span></span><code>  eval_ir_main -v=3 --logtostderr sample.opt.ir
+</code></pre></div>
+<p>Extract the unoptimized LLVM IR to file to enable working with it in isolation.</p>
+<h5 id="building-llvm-tools">Building LLVM tools</h5>
+<p>The various LLVM tools such as <code>opt</code> and <code>lli</code> can be built with:</p>
+<div class="highlight"><pre><span></span><code>  bazel build /llvm/llvm-project/llvm:all
+</code></pre></div>
+<p>Build in fastbuild mode to get checks and debug features in LLVM.</p>
+<h5 id="isolating-the-bug">Isolating the bug</h5>
+<p>To inspect the optimized LLVM IR, run:</p>
+<div class="highlight"><pre><span></span><code>  opt sample.ll -O3 -S
+</code></pre></div>
+<p>To print the IR before and after each pass:</p>
+<div class="highlight"><pre><span></span><code> opt sample.ll -S -print-after-all -print-before-all -O3
+</code></pre></div>
+<h5 id="instcombine">Instcombine</h5>
+<p>Instcombine is an LLVM optimization pass which is a common source of bugs in
+code generated from XLS because XLS uses unusual bit widths which exercise
+little used paths in this optimization. To run instcombine alone:</p>
+<div class="highlight"><pre><span></span><code> opt /tmp/bad.ll -S --instcombine
+</code></pre></div>
+<p>Instcombine is a large monolithic pass and it can be difficult to isolate the
+exact transformation which caused the problem. Fortunately, this pass includes a
+"compiler fuel" option which can be used to limit the number of transformations
+performed by the pass. Example usage (fastbuild of LLVM is required):</p>
+<div class="highlight"><pre><span></span><code>opt -S --instcombine sample.ll --debug-counter=instcombine-visit-skip=0,instcombine-visit-count=42
+</code></pre></div>
+<h5 id="evaluating-llvm-ir">Evaluating LLVM IR</h5>
+<p>The LLVM tool <code>lli</code> evaluates LLVM IR. The tool expects the IR to include a
+entry function <code>main</code>. See the uploaded file in this
+<a href="https://bugs.llvm.org/show_bug.cgi?id=45762">LLVM bug</a> for an example LLVM IR
+file which includes a main function that calls a (slightly modified)
+XLS-generated function.</p>
+<p>The LLVM tool <code>opt</code> optimizes the LLVM IR and can be piped to <code>lli</code> like so:</p>
+<div class="highlight"><pre><span></span><code>  opt sample.ll --O2 | lli
+</code></pre></div>
+<h5 id="building-llvm-at-head">Building LLVM at head</h5>
+<p>Although the internal Google mirror of LLVM is updated frequently, prior to
+filing an LLVM bug it's a good idea to verify the failure against LLVM head.
+Steps to build:</p>
+<div class="highlight"><pre><span></span><code>git clone https://github.com/llvm/llvm-project.git
+cd llvm
+mkdir build
+cd build
+cmake -G Ninja ../llvm/
+cmake --build . -- opt
+</code></pre></div>
+<h3 id="result-miscomparison-simulated-verilog">Result miscomparison: simulated Verilog</h3>
+<p>This can be a bug in codegen, XLS's Verilog testbench code, or the Verilog
+simulator itself. Running the generated Verilog with different simulators can
+help isolate the problem:</p>
+<div class="highlight"><pre><span></span><code>  simulate_module_main --signature_file=module_sig.textproto \
+    --args_file=args.txt \
+    --verilog_simulator=iverilog \
+    sample.v
+
+  simulate_module_main --signature_file=module_sig.textproto \
+    --args_file=args.txt \
+    --verilog_simulator=${SIM_2} \
+    sample.v
+</code></pre></div>
+<p>The tool outputs the results of the evaluation to stdout so diffing their
+outputs is required.</p>
+
+
+
+
+              
+            </article>
+            
+          </div>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="Footer" >
+      
+        
+        <a href="../floating_point/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Floating Point" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Floating Point
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../dslx_bytecode_interpreter/" class="md-footer__link md-footer__link--next" aria-label="Next: Interpreter" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Interpreter
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.ecf98df9.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.9c69f0bc.min.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

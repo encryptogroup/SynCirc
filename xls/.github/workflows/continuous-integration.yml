@@ -1,0 +1,47 @@
+# https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions
+# See also: https://github.com/marketplace/actions/bazel-action
+
+name: Continuous Integration
+on:
+  # Avoid triggering on pushes to /all/ open PR branches.
+  push:
+    branches:
+      - main
+    paths-ignore:
+      # Do not trigger action when docs are updated.
+      - 'docs/**'
+  pull_request:
+    branches:
+      - main
+  # This lets us trigger manually from the UI.
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Bazel Test All (opt)
+    runs-on: ubuntu-20.04
+    timeout-minutes: 600
+    steps:
+      - uses: actions/checkout@v2
+      - name: Mount Bazel Cache
+        uses: actions/cache@v3
+        with:
+          path: "~/.cache/bazel"
+          # Create/use a cache called bazel-cache-20_04-<commit hash>
+          # and read the latest cache with prefix bazel-cache-20_04-
+          # if it doesn't already exist.
+          key: bazel-cache-20_04-${{ github.sha }}
+          restore-keys: bazel-cache-20_04-
+      - name: Install bazelisk
+        run: |
+          curl -LO "https://github.com/bazelbuild/bazelisk/releases/download/v1.1.0/bazelisk-linux-amd64"
+          mkdir -p "${GITHUB_WORKSPACE}/bin/"
+          mv bazelisk-linux-amd64 "${GITHUB_WORKSPACE}/bin/bazel"
+          chmod +x "${GITHUB_WORKSPACE}/bin/bazel"
+      - name: Install dependencies via apt
+        run: sudo apt-get install python3-dev python3-distutils python3-dev python-is-python3 libtinfo5
+      # Note: xlscc is excluded because it builds Clang, and that pushes us
+      # over 6 hours of build time.
+      - name: Bazel Test All (opt)
+        run: |
+          "${GITHUB_WORKSPACE}/bin/bazel" test -c opt -- //xls/... -//xls/contrib/xlscc/...

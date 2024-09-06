@@ -1,0 +1,38 @@
+package test_module
+
+file_number 0 "fake_file.x"
+
+chan main_chandecl_test_module_x_28_18_28_26(bits[32], id=0, kind=streaming, ops=send_receive, flow_control=ready_valid, metadata="""""")
+chan main__foo_chandecl_test_module_x_8_20_8_28(bits[32], id=1, kind=streaming, ops=send_receive, flow_control=ready_valid, metadata="""""")
+chan main__foo_chandecl_test_module_x_9_20_9_28(bits[32], id=2, kind=streaming, ops=send_receive, flow_control=ready_valid, metadata="""""")
+chan main__foo_chandecl_test_module_x_10_20_10_28(bits[32], id=3, kind=streaming, ops=send_receive, flow_control=ready_valid, metadata="""""")
+chan main__foo_chandecl_test_module_x_11_20_11_28(bits[32], id=4, kind=streaming, ops=send_receive, flow_control=ready_valid, metadata="""""")
+
+top proc __test_module__main_0_next(__token: token, __state: (), init={()}) {
+  literal.3: bits[1] = literal(value=1, id=3)
+  tuple.4: () = tuple(id=4)
+  after_all.5: token = after_all(__token, id=5)
+  next (after_all.5, tuple.4)
+}
+
+proc __test_module__main__foo_0_next(__token: token, __state: bits[32], init={0}) {
+  zero_ext.9: bits[32] = zero_ext(__state, new_bit_count=32, id=9)
+  tok0: token = send(__token, zero_ext.9, channel_id=1, id=10)
+  zero_ext.15: bits[32] = zero_ext(__state, new_bit_count=32, id=15)
+  zero_ext.11: bits[32] = zero_ext(__state, new_bit_count=32, id=11)
+  zero_ext.13: bits[32] = zero_ext(__state, new_bit_count=32, id=13)
+  zero_ext.17: bits[32] = zero_ext(__state, new_bit_count=32, id=17)
+  tok3: token = send(tok0, zero_ext.15, channel_id=1, id=16)
+  tok1: token = send(__token, zero_ext.11, channel_id=2, id=12)
+  tok2: token = send(__token, zero_ext.13, channel_id=3, id=14)
+  send.18: token = send(tok0, zero_ext.17, channel_id=1, id=18)
+  receive.20: (token, bits[32]) = receive(tok3, channel_id=4, id=20)
+  literal.23: bits[32] = literal(value=1, id=23)
+  tok: token = after_all(tok0, tok1, tok2, send.18, id=19)
+  tok__1: token = tuple_index(receive.20, index=0, id=21)
+  literal.8: bits[1] = literal(value=1, id=8)
+  value: bits[32] = tuple_index(receive.20, index=1, id=22)
+  add.24: bits[32] = add(__state, literal.23, id=24)
+  after_all.25: token = after_all(__token, tok0, tok1, tok2, tok3, send.18, tok, tok__1, id=25)
+  next (after_all.25, add.24)
+}

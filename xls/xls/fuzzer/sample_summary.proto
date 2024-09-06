@@ -1,0 +1,67 @@
+// Copyright 2020 The XLS Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto2";
+
+package xls.fuzzer;
+
+message NodeProto {
+  // XLS op. Example: "smul".
+  optional string op = 1;
+
+  // XLS type. Possible values: "bits", "array", or "tuple".
+  optional string type = 2;
+
+  // The flattened bit width of the operation.
+  optional int64 width = 3;
+
+  // Information about the operands of the operation. Only one level of
+  // recursion is supported.
+  repeated NodeProto operands = 4;
+}
+
+// Holds the elapsed time (in nanoseconds) for various per-sample operations
+// within the fuzzer.
+message SampleTimingProto {
+  // Total time to generate and run the sample (in nanoseconds).
+  optional int64 total_ns = 1;
+
+  // Breakdown of timing for each operation performed on the sample (in
+  // nanoseconds).
+  optional int64 generate_sample_ns = 2;
+  optional int64 interpret_dslx_ns = 3;
+  optional int64 convert_ir_ns = 4;
+  optional int64 unoptimized_interpret_ir_ns = 5;
+  optional int64 unoptimized_jit_ns = 6;
+  optional int64 optimize_ns = 7;
+  optional int64 optimized_interpret_ir_ns = 8;
+  optional int64 optimized_jit_ns = 9;
+  optional int64 codegen_ns = 10;
+  optional int64 simulate_ns = 11;
+}
+
+message SampleSummaryProto {
+  // Identifier for provenance of this sample. Example: "before-opt".
+  optional SampleTimingProto timing = 1;
+
+  // XLS nodes in this IR sample before optimizations.
+  repeated NodeProto unoptimized_nodes = 2;
+
+  // XLS nodes in this IR sample after optimizations.
+  repeated NodeProto optimized_nodes = 3;
+}
+
+message SampleSummariesProto {
+  repeated SampleSummaryProto samples = 1;
+}

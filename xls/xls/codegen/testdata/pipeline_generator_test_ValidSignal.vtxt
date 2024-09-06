@@ -1,0 +1,43 @@
+module ValidSignal(
+  input wire clk,
+  input wire in_valid,
+  input wire [1:0] s,
+  input wire [7:0] x,
+  input wire [7:0] y,
+  input wire [7:0] z,
+  input wire [7:0] a,
+  output wire out_valid,
+  output wire [7:0] out
+);
+  // ===== Pipe stage 0:
+
+  // Registers for pipe stage 0:
+  reg p0_valid;
+  reg [1:0] p0_s;
+  reg [7:0] p0_x;
+  reg [7:0] p0_y;
+  reg [7:0] p0_z;
+  reg [7:0] p0_a;
+  always @ (posedge clk) begin
+    p0_valid <= in_valid;
+    p0_s <= in_valid ? s : p0_s;
+    p0_x <= in_valid ? x : p0_x;
+    p0_y <= in_valid ? y : p0_y;
+    p0_z <= in_valid ? z : p0_z;
+    p0_a <= in_valid ? a : p0_a;
+  end
+
+  // ===== Pipe stage 1:
+  wire [7:0] p1_sel_22_comb;
+  assign p1_sel_22_comb = p0_s == 2'h0 ? p0_x : (p0_s == 2'h1 ? p0_y : (p0_s == 2'h2 ? p0_z : p0_a));
+
+  // Registers for pipe stage 1:
+  reg p1_valid;
+  reg [7:0] p1_sel_22;
+  always @ (posedge clk) begin
+    p1_valid <= p0_valid;
+    p1_sel_22 <= p0_valid ? p1_sel_22_comb : p1_sel_22;
+  end
+  assign out_valid = p1_valid;
+  assign out = p1_sel_22;
+endmodule

@@ -1,0 +1,55 @@
+// Copyright 2020 The XLS Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto2";
+
+package xls;
+
+// Metadata for a channel which describes ports on a Verilog module.
+message ModulePortProto {
+  // Whether the port is flopped on entry (exit) to (from) the module.
+  // TODO(meheff): 2021-04-23 This is effectively unused. Remove it.
+  optional bool flopped = 1;
+
+  // A number used to determine the ordering of the ports. Within a proc, the
+  // port_order of the channels must be numbered densely from zero. Channels
+  // with lower numbered port_order values will have corresponding ports earlier
+  // in the module declaration. The port_order value does not necessarily
+  // correspond to the position of the port in the Verilog module because a
+  // channel can correspond to multiple ports and the module may have other
+  // ports such as clock and reset.
+  // TODO(meheff): 2021-04-23 Remove this and replace uses with
+  // PortChannel::Position.
+  optional int64 port_order = 2;
+}
+
+// Metadata associating channels with specific ports in a block/module.
+message BlockPortMappingProto {
+  optional string block_name = 1;
+  optional string data_port_name = 2;
+  optional string ready_port_name = 3;
+  optional string valid_port_name = 4;
+}
+
+// Metadata about an XLS channel. Generally, information held in this proto is
+// used by code generation. Information used for IR transformations or analysis
+// (e.g., data types) should be held directly in the xls::Channel data
+// structure.
+message ChannelMetadataProto {
+  oneof channel_oneof {
+    ModulePortProto module_port = 1;
+  }
+
+  optional BlockPortMappingProto block_ports = 2;
+}

@@ -1,0 +1,31 @@
+name: Build MkDocs And Commit HTML
+
+on:
+  workflow_dispatch:
+    inputs:
+      xls-github-bot-pat:
+        description: 'The Personal Access Token (PAT) for the xls-github-bot user.'
+        required: true
+
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        token: ${{github.event.inputs.xls-github-bot-pat}}
+    - uses: actions/setup-python@v2
+    - name: Install Python dependencies
+      run: |
+        pip install --upgrade pip
+        pip install mkdocs mkdocs-gen-files mkdocs-material mkdocs-exclude mdx_truly_sane_lists
+    - name: Build MkDocs And Commit HTML
+      run: |
+        mkdocs build
+        git config --global user.name 'xls-github-bot'
+        git config --global user.email 'xls-github-bot'
+        git add .
+        LATEST_HASH=$(git rev-parse HEAD)
+        git commit -a -m "mkdocs generated documentation from ${LATEST_HASH}" && git push

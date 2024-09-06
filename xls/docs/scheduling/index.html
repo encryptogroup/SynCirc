@@ -1,0 +1,1638 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://google.github.io/xls/scheduling/">
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.3.1, mkdocs-material-8.4.2">
+    
+    
+      
+        <title>Overview - XLS: Accelerated HW Synthesis</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.69437709.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.cbb835fc.min.css">
+        
+      
+      
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#xls-pipeline-scheduling" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="XLS: Accelerated HW Synthesis" class="md-header__button md-logo" aria-label="XLS: Accelerated HW Synthesis" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            XLS: Accelerated HW Synthesis
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Overview
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/google/xls/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.1.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="XLS: Accelerated HW Synthesis" class="md-nav__button md-logo" aria-label="XLS: Accelerated HW Synthesis" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    XLS: Accelerated HW Synthesis
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/google/xls/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.1.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          Tutorials
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Tutorials" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Tutorials
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_2" type="checkbox" id="__nav_2_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_2">
+          DSLX
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="DSLX" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_2">
+          <span class="md-nav__icon md-icon"></span>
+          DSLX
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/hello_xls/" class="md-nav__link">
+        Hello, XLS!
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/float_to_int/" class="md-nav__link">
+        Basic logic
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/intro_to_parametrics/" class="md-nav__link">
+        Intro to parameterics
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/crc32/" class="md-nav__link">
+        For expressions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/prefix_scan/" class="md-nav__link">
+        Enumerate and match
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_3" type="checkbox" id="__nav_2_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_3">
+          XLS[cc]
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="XLS[cc]" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_3">
+          <span class="md-nav__icon md-icon"></span>
+          XLS[cc]
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/xlscc_overview/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/xlscc_channels/" class="md-nav__link">
+        Channels
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/xlscc_state/" class="md-nav__link">
+        State
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          IR
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="IR" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          IR
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ir_semantics/" class="md-nav__link">
+        Semantics
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../optimizations/" class="md-nav__link">
+        Optimizations
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3" type="checkbox" id="__nav_3_3" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_3">
+          Scheduling
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Scheduling" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_3">
+          <span class="md-nav__icon md-icon"></span>
+          Scheduling
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Overview
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Overview
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#scheduling-process" class="md-nav__link">
+    Scheduling process
+  </a>
+  
+    <nav class="md-nav" aria-label="Scheduling process">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-determine-the-effective-clock-period" class="md-nav__link">
+    Step 1: determine the effective clock period
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-schedule-to-minimize-pipeline-registers" class="md-nav__link">
+    Step 2: schedule to minimize pipeline registers
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-options" class="md-nav__link">
+    Options for common scheduling objectives
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#min-cut" class="md-nav__link">
+    Minimizing pipeline registers via min-cut
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rematerialization" class="md-nav__link">
+    Rematerialization
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../delay_estimation/" class="md-nav__link">
+        Delay Estimation
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ir_visualization/" class="md-nav__link">
+        Visualizer
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_5" type="checkbox" id="__nav_3_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_5">
+          Native JIT
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Native JIT" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_5">
+          <span class="md-nav__icon md-icon"></span>
+          Native JIT
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ir_jit/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data_layout/" class="md-nav__link">
+        Data Layout
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../solvers/" class="md-nav__link">
+        Formal
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          DSLX
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="DSLX" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          DSLX
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dslx_reference/" class="md-nav__link">
+        Reference
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dslx_std/" class="md-nav__link">
+        Standard Library
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../floating_point/" class="md-nav__link">
+        Floating Point
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fuzzer/" class="md-nav__link">
+        Fuzzer
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dslx_bytecode_interpreter/" class="md-nav__link">
+        Interpreter
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          Code Generation
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Code Generation" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          Code Generation
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../vast/" class="md-nav__link">
+        VAST
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6">
+          Tools
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Tools" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          Tools
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../build_system/" class="md-nav__link">
+        Build System
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bazel_rules_macros/" class="md-nav__link">
+        Bazel Rules And Macros
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tools_quick_start/" class="md-nav__link">
+        Quick Start
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tools/" class="md-nav__link">
+        Listing
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../interpreters/" class="md-nav__link">
+        Interpreters
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7">
+          Development
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Development" data-md-level="1">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          Development
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing/" class="md-nav__link">
+        Contributing
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../xls_style/" class="md-nav__link">
+        Style Guide
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adding_ir_operation/" class="md-nav__link">
+        Adding a new IR operation
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_8" type="checkbox" id="__nav_8" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_8">
+          NoC
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="NoC" data-md-level="1">
+        <label class="md-nav__title" for="__nav_8">
+          <span class="md-nav__icon md-icon"></span>
+          NoC
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../xls_noc_readme/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_8_2" type="checkbox" id="__nav_8_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_8_2">
+          Topologies
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Topologies" data-md-level="2">
+        <label class="md-nav__title" for="__nav_8_2">
+          <span class="md-nav__icon md-icon"></span>
+          Topologies
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../xls_noc_topologies/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../xls_noc_dimension_order_topology/" class="md-nav__link">
+        Dimension Order
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../xls_noc_tree_topology/" class="md-nav__link">
+        Tree
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../xls_noc_butterfly_topology/" class="md-nav__link">
+        k-ary n-fly Butterfly
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../xls_noc_fully_connected_topology/" class="md-nav__link">
+        Fully Connected
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../xls_noc_star_topology/" class="md-nav__link">
+        Star
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../xls_noc_glossary/" class="md-nav__link">
+        Glossary
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#scheduling-process" class="md-nav__link">
+    Scheduling process
+  </a>
+  
+    <nav class="md-nav" aria-label="Scheduling process">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-determine-the-effective-clock-period" class="md-nav__link">
+    Step 1: determine the effective clock period
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-schedule-to-minimize-pipeline-registers" class="md-nav__link">
+    Step 2: schedule to minimize pipeline registers
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#common-options" class="md-nav__link">
+    Options for common scheduling objectives
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#min-cut" class="md-nav__link">
+    Minimizing pipeline registers via min-cut
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rematerialization" class="md-nav__link">
+    Rematerialization
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+  <a href="https://github.com/google/xls/tree/main/docs_src/scheduling.md" title="Edit this page" class="md-content__button md-icon">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
+  </a>
+
+
+
+<h1 id="xls-pipeline-scheduling">XLS Pipeline scheduling</h1>
+<div class="toc">
+<ul>
+<li><a href="#xls-pipeline-scheduling">XLS Pipeline scheduling</a><ul>
+<li><a href="#scheduling-process">Scheduling process</a><ul>
+<li><a href="#step-1-determine-the-effective-clock-period">Step 1: determine the effective clock period</a></li>
+<li><a href="#step-2-schedule-to-minimize-pipeline-registers">Step 2: schedule to minimize pipeline registers</a></li>
+<li><a href="#common-options">Options for common scheduling objectives</a></li>
+</ul>
+</li>
+<li><a href="#min-cut">Minimizing pipeline registers via min-cut</a></li>
+<li><a href="#rematerialization">Rematerialization</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<p>Pipeline scheduling divides the IR nodes of an XLS function or proc into a
+sequence of stages constituting a feed-forward pipeline. Sequential stages are
+separated by registers enabling pipeline parallelism. The schedule must satisfy
+dependency constraints between XLS nodes as well as timing constraints imposed
+by the target clock frequency. Pipeline scheduling has multiple competing
+optimization objectives: minimize number of stages (minimize pipeline latency),
+minimize maximum delay of any stage (maximize clock frequency), and minimize the
+number of pipeline registers.</p>
+<h2 id="scheduling-process">Scheduling process</h2>
+<p>Pipeline scheduling occurs in two phases:</p>
+<ol>
+<li>
+<p>Determine the effective clock period. This clock period defines the maximum
+    delay, based on XLS's internal <a href="../delay_estimation/">delay model</a>, through
+    any pipeline stage and limits how many IR operations might be placed in each
+    stage.</p>
+</li>
+<li>
+<p>Given the constraints of the effective clock period and, optionally, a
+    user-defined number of pipeline stages, find the schedule which minimizes
+    the number of pipeline registers. Pipeline registers are required for any IR
+    operation whose value which is used in a later stage.</p>
+</li>
+</ol>
+<p>The schedule process is controlled via several options defined
+<a href="https://github.com/google/xls/tree/main/xls/scheduling/tools/pipeline_schedule.h">here</a>.
+These options are typically passed in as flags to the
+<a href="https://github.com/google/xls/tree/main/xls/tools/codegen_main.cc"><code>codegen_main</code> binary</a>
+but maybe set programmatically. Each is optional though at least one of <strong>clock
+period</strong> or <strong>pipeline stages</strong> must be specified. Different combinations of
+options result in different strategies as described <a href="#common-options">below</a>.</p>
+<p>Clock period
+:   The target clock period.</p>
+<p>Pipeline stages
+:   The number of stages in the pipeline.</p>
+<p>Clock margin percent
+:   The percentage to reduce the target clock period before scheduling. May only
+    be specified with <strong>clock period</strong>. This option is equivalent to specifying
+    a reduced value for <strong>clock period</strong>.</p>
+<p>Clock period relaxation percent:
+:   This is the percentage that the computed minimum clock period, as determined
+    by the number of pipeline stages, is increased (relaxed) prior to
+    scheduling. May not be specified with <strong>clock period</strong>.</p>
+<h3 id="step-1-determine-the-effective-clock-period">Step 1: determine the effective clock period</h3>
+<p>The effective clock period determines the maximum delay through any pipeline
+stage for the purpose of scheduling. The value is determined in one of two ways
+depending upon whether the <strong>clock period</strong> option is specified.</p>
+<ol>
+<li>
+<p><strong>clock period</strong> specified</p>
+<p>The effective clock period is set the <strong>clock period</strong> value. If <strong>clock
+  margin percent</strong> is also specified, then the effective clock period is also
+  reduced by the given percentage. Example: if <strong>clock period</strong> is 800ps and
+  <strong>clock margin percent</strong> is 20% then the effective clock period is 640ps.</p>
+</li>
+<li>
+<p><strong>clock period</strong> not specified</p>
+<p>In this case, <strong>pipeline stages</strong> must be specified. The effective clock
+  period is computed as the minimum clock period in which a schedule may be
+  found that meets timing with the specified number of pipeline stages. This
+  is done via a binary search through clock period values. If <strong>clock period
+  relaxation percent</strong> is specified then the computed effective clock period
+  is <em>increased</em> by the given percentage. The motivation is that this
+  relaxation may result in fewer pipeline registers because of increased
+  scheduling flexibility. Example: if the minimum clock period found by XLS
+  was 1000ps and <strong>clock period relaxation percent</strong> is 10% the effective
+  clock period is 1100ps.</p>
+</li>
+</ol>
+<h3 id="step-2-schedule-to-minimize-pipeline-registers">Step 2: schedule to minimize pipeline registers</h3>
+<p>Once an effective clock period is determined, XLS computes a schedule which
+minimizes the number of registers (see <a href="#min-cut">below</a> for details) while
+satisfying the critical path delay constraints imposed by the effective clock
+period. The number of stages in the pipeline may be specified by the user via
+the <strong>pipeline stages</strong> option. If the number of pipeline stages specified is
+too small an error such that no feasible schedule can be found then an error is
+returned. If <strong>pipeline stages</strong> is not given then the minimum number of stages
+which meets the delay constraint imposed by the effective clock period is used.</p>
+<h3 id="common-options">Options for common scheduling objectives</h3>
+<p>Different scheduling options result in different optimization strategies for the
+scheduler. Below are several common scheduling objectives and options which
+should be set to enable them.</p>
+<ol>
+<li>
+<p>Minimize the number of pipeline registers for a given clock period and given
+    number of pipeline stages.</p>
+<p>Specify both <strong>clock period</strong> and <strong>pipeline stages</strong>. The scheduler will
+  attempt to minimize the number of pipeline registers given those
+  constraints. The option <strong>clock margin percent</strong> can be swept to search the
+  local design space (or equivalently, sweep <strong>clock period</strong>)</p>
+</li>
+<li>
+<p>Minimize the clock period for a given number of pipeline stages</p>
+<p>Specify only <strong>pipeline stages</strong>. XLS will find a schedule with minimum
+  clock period with a secondary objective of minimizing the number of pipeline
+  registers. Sweeping <strong>clock period relaxation percent</strong> explores relaxing
+  the timing constraint which may result in fewer pipeline registers.</p>
+</li>
+<li>
+<p>Minimize the number of pipeline stages for a given clock period</p>
+<p>Specify only <strong>clock period</strong>. XLS will find a schedule of the minimum
+  number of stages with a secondary objective of minimizing the number of
+  pipeline registers. The option <strong>clock margin percent</strong> can be swept to
+  search the local design space (or equivalently, sweep <strong>clock period</strong>)</p>
+</li>
+<li>
+<p>Minimize the number of pipeline registers for a given clock period</p>
+<p>Specify only <strong>clock period</strong> and sweep <strong>pipeline stages</strong>. Pick the
+  schedule which produces the minimum number of pipeline registers.</p>
+</li>
+<li>
+<p>Sweep the entire scheduling space</p>
+<p>The various options directly or indirectly control the two degrees of
+  freedom within the scheduler: pipeline stages and clock period. Sweeping
+  these two degrees of freedom is most easily done by sweeping <strong>pipeline
+  stages</strong> and <strong>clock period relaxation percent</strong>. The advantage of sweeping
+  <strong>clock period relaxation percent</strong> instead of <strong>clock period</strong> directly is
+  that the percent relaxation can be a fixed range (e.g., 0 to 50%) for all
+  designs and each value will produce a feasible schedule. If <strong>clock period</strong>
+  is swept some combinations of <strong>pipeline stages* and </strong>clock period** values
+  will result in an error returned because the design point is infeasible.</p>
+</li>
+</ol>
+<h2 id="min-cut">Minimizing pipeline registers via min-cut</h2>
+<p>Scheduling to minimize pipeline registers can be formulated as a graph min-cut
+problem where the graph cut divides the nodes of the graph into separate
+pipeline stages and the cost of the cut is the number of bits in the pipeline
+register between the stages. This formulation of the pipeline scheduling problem
+is attractive because the graph min-cut problem can be solved in polynomial
+time.</p>
+<p>In general, the XLS IR graph cannot be used directly by the min-cut algorithm
+because of additional constraints imposed by pipeline scheduling and features of
+the IR graph. As a motivating example, consider the following graph of an XLS
+function to be scheduled into a two-stage pipeline:</p>
+<p><img alt="drawing" src="../mincut_scheduling_0.png" /></p>
+<p>Node <strong><em>x</em></strong> is a parameter to the function, and node <strong><em>F</em></strong> is the return
+value. The width of the edges correlates with the (labeled) bit width of the
+respective operation. The bit width of the edges are edge weights in the min-cut
+algorithm.</p>
+<p>The drawing above shows the initial and final pipeline registers which flops the
+input output on the interface boundary. In this example, a two-stage pipeline is
+desired so one additional pipeline register is required. The scheduling problem
+is to partition the nodes <strong><em>A</em></strong> through <strong><em>F</em></strong> into the two pipeline stages
+while minimizing register count, or alternatively formulated, identify a cut
+through the graph of minimum cost. Below is one possible cut resulting in a
+pipeline schedule where nodes <strong><em>A</em></strong> and <strong><em>B</em></strong> are in stage one and nodes
+<strong><em>C</em></strong> through <strong><em>F</em></strong> are in stage two.</p>
+<p><img alt="drawing" src="../mincut_scheduling_1.png" /></p>
+<p>In the pipeline generated from the example cut above pipeline registers are
+required for nodes <strong><em>A</em></strong> and <strong><em>B</em></strong> of bit widths 2 and 32 respectively for a
+total of 34 flops. However this value is inconsistent with the cost of the cut
+in the IR graph which is equal to the sum of weights of the cut edges: 2 + 32 +
+32 = 66. To reconcile the cost function, transformations are applied to the
+graph about nodes with fan-out. Specifically, an artificial node <strong><em>N'</em></strong> is
+added for each node <strong><em>N</em></strong> with fan-out and an edge is added from each
+immediate successor of <strong><em>N</em></strong> to <strong><em>N'</em></strong>. The weight of each edge fanning out
+from <strong><em>N</em></strong> and fanning into <strong><em>N'</em></strong> is set to the original weight of the
+edges of <strong><em>N</em></strong> divided by the fan-out factor. In the example, the edge weight
+is set to 32 / 2 = 16. Below is the transformed graph. As shown, the cost of the
+cut (sum of edge weights) now equals the number of flops in the pipeline
+register (34).</p>
+<p><img alt="drawing" src="../mincut_scheduling_2.png" /></p>
+<p>For scheduling the example graph, assume the target clock period be three time
+units and all nodes have unit delay. In this case, not all cuts will produce a
+schedule which satisfies the timing constraint. Specifically, if <strong><em>B</em></strong> is
+scheduled in the second stage, or <strong><em>F</em></strong> is scheduled in the first stage the
+pipeline cannot meet the timing constraint. To ensure the min-cut results in a
+schedule which satisfies timing an artificial source and sink node is added to
+the graph. Edges with infinite weight are added from the source to nodes which
+must be scheduled in the first stage (or earlier in the case of parameter nodes)
+to satisfy timing constraints. Similar edges are added from nodes which must be
+scheduled in the second stage to the sink node as shown below:</p>
+<p><img alt="drawing" src="../mincut_scheduling_3.png" /></p>
+<p>One additional transformation (not shown) is required to ensure a correct
+pipeline. Generally, a partitioning created by a min-cut allows edges going in
+both directions between the partitions. However, pipeline stages do not allow
+circular dependencies. To enforce directionality to the edges of the cut, an
+edge of infinite weight is added parallel to and in the opposite direction of
+every edge in the graph.</p>
+<p>After transforming the graph, a min-cut is found by applying a max flow
+algorithm (Ford-Fulkerson) from the artificial source node to the artificial
+sink node. In the running example, the min cut is edges <strong><em>C</em></strong> -&gt; <strong><em>F</em></strong> and
+<strong><em>E</em></strong> -&gt; <strong><em>F</em></strong> of cost 12. All nodes except <strong><em>F</em></strong> are placed in the first
+stage of the pipeline.</p>
+<p>Generally, a pipeline can have more than two stages so a single cut is
+insufficient to determine a schedule. In this case a sequence of cuts is
+performed, one for each boundary between pipeline stages. Each min-cut
+partitions the nodes into two parts: the set of nodes scheduled before the
+respective stage boundary, and the set of node scheduled after. This imposes
+additional constraints on later min-cut computations. These constraints are
+imposed by extending infinite weight edges between these nodes and the source or
+sink node in the graph.</p>
+<p>The order in which the sequence of cuts is performed (e.g., cut the boundary
+between stage 0 and stage 1, then between 1 and 2, then between 2 and 3, and so
+on) can affect the total number of pipeline flops so, in general, multiple
+orders are attempted and the result with the fewest pipeline flops is kept.</p>
+<h2 id="rematerialization">Rematerialization</h2>
+<p>TODO(meheff): Finish.</p>
+
+
+
+
+              
+            </article>
+            
+          </div>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="Footer" >
+      
+        
+        <a href="../optimizations/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Optimizations" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Optimizations
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../delay_estimation/" class="md-footer__link md-footer__link--next" aria-label="Next: Delay Estimation" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Delay Estimation
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.ecf98df9.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.9c69f0bc.min.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

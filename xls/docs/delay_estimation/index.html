@@ -1,0 +1,1773 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://google.github.io/xls/delay_estimation/">
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.3.1, mkdocs-material-8.4.2">
+    
+    
+      
+        <title>Delay Estimation - XLS: Accelerated HW Synthesis</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.69437709.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.cbb835fc.min.css">
+        
+      
+      
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#delay-estimation-methodology" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="XLS: Accelerated HW Synthesis" class="md-header__button md-logo" aria-label="XLS: Accelerated HW Synthesis" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            XLS: Accelerated HW Synthesis
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Delay Estimation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/google/xls/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.1.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="XLS: Accelerated HW Synthesis" class="md-nav__button md-logo" aria-label="XLS: Accelerated HW Synthesis" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    XLS: Accelerated HW Synthesis
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/google/xls/" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.1.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          Tutorials
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Tutorials" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Tutorials
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_2" type="checkbox" id="__nav_2_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_2">
+          DSLX
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="DSLX" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_2">
+          <span class="md-nav__icon md-icon"></span>
+          DSLX
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/hello_xls/" class="md-nav__link">
+        Hello, XLS!
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/float_to_int/" class="md-nav__link">
+        Basic logic
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/intro_to_parametrics/" class="md-nav__link">
+        Intro to parameterics
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/crc32/" class="md-nav__link">
+        For expressions
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/prefix_scan/" class="md-nav__link">
+        Enumerate and match
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2_3" type="checkbox" id="__nav_2_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2_3">
+          XLS[cc]
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="XLS[cc]" data-md-level="2">
+        <label class="md-nav__title" for="__nav_2_3">
+          <span class="md-nav__icon md-icon"></span>
+          XLS[cc]
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/xlscc_overview/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/xlscc_channels/" class="md-nav__link">
+        Channels
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/xlscc_state/" class="md-nav__link">
+        State
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          IR
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="IR" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          IR
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ir_semantics/" class="md-nav__link">
+        Semantics
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../optimizations/" class="md-nav__link">
+        Optimizations
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3" type="checkbox" id="__nav_3_3" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_3">
+          Scheduling
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Scheduling" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_3">
+          <span class="md-nav__icon md-icon"></span>
+          Scheduling
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scheduling/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Delay Estimation
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Delay Estimation
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#context" class="md-nav__link">
+    Context
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#background" class="md-nav__link">
+    Background
+  </a>
+  
+    <nav class="md-nav" aria-label="Background">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-xls-is-compiling" class="md-nav__link">
+    What XLS is compiling
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-delay-problem" class="md-nav__link">
+    The delay problem
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#simple-delay-estimation" class="md-nav__link">
+    Simple Delay Estimation
+  </a>
+  
+    <nav class="md-nav" aria-label="Simple Delay Estimation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sweeping-multiple-dimensions" class="md-nav__link">
+    Sweeping multiple dimensions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sources-of-pessimismoptimism" class="md-nav__link">
+    Sources of pessimism/optimism
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iterative-refinement" class="md-nav__link">
+    Iterative refinement
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#on-hints" class="md-nav__link">
+    On Hints
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tools" class="md-nav__link">
+    Tools
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ir_visualization/" class="md-nav__link">
+        Visualizer
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_5" type="checkbox" id="__nav_3_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3_5">
+          Native JIT
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Native JIT" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_5">
+          <span class="md-nav__icon md-icon"></span>
+          Native JIT
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ir_jit/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data_layout/" class="md-nav__link">
+        Data Layout
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../solvers/" class="md-nav__link">
+        Formal
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          DSLX
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="DSLX" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          DSLX
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dslx_reference/" class="md-nav__link">
+        Reference
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dslx_std/" class="md-nav__link">
+        Standard Library
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../floating_point/" class="md-nav__link">
+        Floating Point
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fuzzer/" class="md-nav__link">
+        Fuzzer
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dslx_bytecode_interpreter/" class="md-nav__link">
+        Interpreter
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_5">
+          Code Generation
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Code Generation" data-md-level="1">
+        <label class="md-nav__title" for="__nav_5">
+          <span class="md-nav__icon md-icon"></span>
+          Code Generation
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../vast/" class="md-nav__link">
+        VAST
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_6" type="checkbox" id="__nav_6" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_6">
+          Tools
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Tools" data-md-level="1">
+        <label class="md-nav__title" for="__nav_6">
+          <span class="md-nav__icon md-icon"></span>
+          Tools
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../build_system/" class="md-nav__link">
+        Build System
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bazel_rules_macros/" class="md-nav__link">
+        Bazel Rules And Macros
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tools_quick_start/" class="md-nav__link">
+        Quick Start
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tools/" class="md-nav__link">
+        Listing
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../interpreters/" class="md-nav__link">
+        Interpreters
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_7" type="checkbox" id="__nav_7" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_7">
+          Development
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Development" data-md-level="1">
+        <label class="md-nav__title" for="__nav_7">
+          <span class="md-nav__icon md-icon"></span>
+          Development
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing/" class="md-nav__link">
+        Contributing
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../xls_style/" class="md-nav__link">
+        Style Guide
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adding_ir_operation/" class="md-nav__link">
+        Adding a new IR operation
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_8" type="checkbox" id="__nav_8" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_8">
+          NoC
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="NoC" data-md-level="1">
+        <label class="md-nav__title" for="__nav_8">
+          <span class="md-nav__icon md-icon"></span>
+          NoC
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../xls_noc_readme/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_8_2" type="checkbox" id="__nav_8_2" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_8_2">
+          Topologies
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Topologies" data-md-level="2">
+        <label class="md-nav__title" for="__nav_8_2">
+          <span class="md-nav__icon md-icon"></span>
+          Topologies
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../xls_noc_topologies/" class="md-nav__link">
+        Overview
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../xls_noc_dimension_order_topology/" class="md-nav__link">
+        Dimension Order
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../xls_noc_tree_topology/" class="md-nav__link">
+        Tree
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../xls_noc_butterfly_topology/" class="md-nav__link">
+        k-ary n-fly Butterfly
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../xls_noc_fully_connected_topology/" class="md-nav__link">
+        Fully Connected
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../xls_noc_star_topology/" class="md-nav__link">
+        Star
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../xls_noc_glossary/" class="md-nav__link">
+        Glossary
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#context" class="md-nav__link">
+    Context
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#background" class="md-nav__link">
+    Background
+  </a>
+  
+    <nav class="md-nav" aria-label="Background">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-xls-is-compiling" class="md-nav__link">
+    What XLS is compiling
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-delay-problem" class="md-nav__link">
+    The delay problem
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#simple-delay-estimation" class="md-nav__link">
+    Simple Delay Estimation
+  </a>
+  
+    <nav class="md-nav" aria-label="Simple Delay Estimation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sweeping-multiple-dimensions" class="md-nav__link">
+    Sweeping multiple dimensions
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sources-of-pessimismoptimism" class="md-nav__link">
+    Sources of pessimism/optimism
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#iterative-refinement" class="md-nav__link">
+    Iterative refinement
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#on-hints" class="md-nav__link">
+    On Hints
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tools" class="md-nav__link">
+    Tools
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+  <a href="https://github.com/google/xls/tree/main/docs_src/delay_estimation.md" title="Edit this page" class="md-content__button md-icon">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
+  </a>
+
+
+
+<h1 id="delay-estimation-methodology">Delay Estimation Methodology</h1>
+<h2 id="context">Context</h2>
+<p>This doc describes the delay estimation methodology used in XLS and related
+background.</p>
+<p>Estimating delays through networks of CMOS gates is a rich topic, and Static
+Timing Analysis (STA) is used in chip backend flows to ensure that, even for
+parts operating at the tail end of the distribution, chips continue to function
+as specified logically in the netlist.</p>
+<p>In stark contrast to something with very concrete constraints, like a
+"post-global routing, high-accuracy parasitics static timing analysis", the HLS
+tool needs to estimate at a high level, reasonably near to the user's behavioral
+specification, what delay HLS operations will have when they are "stacked on
+top" of each other in a data dependent fashion in the design.</p>
+<p>This information lets the HLS tool schedule operations into cycles without
+violating timing constraints; e.g. if the user specifies 1GHz (= 1000ps) as
+their target clock frequency, the HLS tool may choose to pack as much data
+dependent work into the 1000ps budget (minus clock uncertainty) as it can on any
+given cycle.</p>
+<p>Although what we're estimating is a close relative of Static Timing Analysis,
+the fact it's being analyzed at a very high level presents a different set of
+tradeoffs, where <strong>coarse granularity estimation</strong> and <strong>conservative bounds</strong>
+are more relevant. Fine-grained / precise analyses are used later in the chip
+design process, in the backend flows, but the HLS tool acts more like an RTL
+designer, creating an RTL output that early timing analysis deems acceptable.</p>
+<p>Notably, we don't want to be <em>too</em> conservative, as being conservative on timing
+can lead to designs that take more area and consume more power, as the flops
+introduced by additional pipeline stages are significant. We want to be as
+accurate as possible while providing a good experience of being able to close
+timing quickly (say, in a single pass, or with a small number of iterations in
+case of a pathological design).</p>
+<h2 id="background">Background</h2>
+<h3 id="what-xls-is-compiling">What XLS is compiling</h3>
+<p>XLS currently supports feed-forward pipelines -- once the user program is
+unrolled into a big "sea of nodes" we must schedule each of those operations
+(represented by nodes) to occur in a cycle.</p>
+<p>It seems clear that an operation like <code>add(bits[32], bits[32]) -&gt; bits[32]</code>
+takes some amount of time to produce a result -- we need to be able to determine
+what that amount of time is for packing that operation into a given cycle.
+<sup><a href="#footnote1">1</a></sup> Note that XLS operations are parametric in their
+bitwidth, so <code>add(bits[17], bits[17]) -&gt; bits[17]</code> is just as possible as a
+value like <code>32</code>. This ain't C code.</p>
+<p><a name='footnote1'>1</a>: Note that we currently pack operations into cycles
+atomically -- that is, we don't break an <code>add</code> that would straddle a cycle
+boundary into <code>add.first_half</code> and <code>add.second_half</code> automatically to pull
+things as early as possible in the pipeline, but this is future work of
+interest. Ideally operations would be described structurally in a way that could
+automatically be cut up according to available delay budget. This would also
+permit operations in the IR that take more than a single cycle to produce a
+value (currently they would have to be "legalized" into operations that fit
+within a cycle, but that is not yet done, the user will simply receive a
+scheduling error).</p>
+<p>Some operations, such as <code>bit_slice</code> or <code>concat</code> are just wiring "feng shui";
+however, they still have some relevance for delay calculations! Say we
+concatenate a value with zeros for zero extension. Even if we could schedule
+that in "cycle 0", if the consumer can only be placed in "cycle 1", we would
+want to "sink" the concat down into "cycle 1" as well to avoid unnecessary
+registers being materialized sending the zero values from "cycle 0".</p>
+<h3 id="the-delay-problem">The delay problem</h3>
+<p>Separately from XLS considerations, there are fundamental considerations in
+calculating the delay through clouds of functional logic in (generated) RTL.</p>
+<p>Between each launching and capturing flop is a functional network of logic
+gates, implemented with standard cells in our ASIC process flows. Chip designs
+target a particular clock frequency as their operating point, and the functional
+network has to produce its output value with a delay that meets the timing
+constraint of the clock frequency. The RTL designer typically has to iterate
+their design until:</p>
+<p>timing path delay &lt;= target clock period - clock uncertainty</p>
+<p>For all timing paths in their design, where clock uncertainty includes
+setup/hold time constraints, and slop that's built in as margin for later
+sources of timing variability (like instantiating a clock tree, which can skew
+the clock signal observed by different flops).</p>
+<p>In a reasonable model, gate delay is affected by a small handful of properties,
+as reflected in the "(Method of) Logical Effort" book:</p>
+<ul>
+<li>The transistor network used to implement a logic function (AKA logical
+  effort): on an input pin change, the gate of each transistor must be driven to
+  a point it recognizes whether a 0 or 1 voltage is being presented. More gates
+  to drive, or larger gates, means more work for the driver.</li>
+<li>The load being driven by the logic function (AKA electrical effort): fanning
+  out to more gates generally means more work to drive them all to their
+  threshold voltages. Being loaded down by bigger gates means more work to drive
+  it to its threshold voltage.</li>
+<li>Parasitic delays: RC elements in the system that leech useful work, typically
+  in a smaller way compared to the efforts listed above.</li>
+</ul>
+<p>The logical effort book describes a way to analyze the delays through a network
+of gates to find the minimal delay, and size transistors in a way that can
+achieve that minimal delay (namely by geometrically smoothing the ability for
+gate to drive capacitance).</p>
+<p>Confounding factors include:</p>
+<ul>
+<li>Medium/large wires: sizing transistors to smooth capacitance becomes difficult
+  as fixed-capacitance elements (wires) are introduced. It seems that small
+  wires have low enough capacitance they can generally be treated as parasitic.</li>
+<li>Divergence/reconvergence in the functional logic network (as a DAG). Different
+  numbers of logic levels and different drive currents may be presented from
+  different branches of a fork/join the logic graph, which forces delay analysis
+  into a system of equations to attempt to minimize the overall delay, as
+  observed by the critical path, with transistor sizing and gate choices. (Some
+  simplifications are possible, like buffering non-critical paths until they
+  have the same number of logic levels so they also have plenty of current to
+  supply at join points.)</li>
+</ul>
+<p>Somewhat orthogonal to the analytical modeling problem, there are also several
+industry standards for supplying process information to Static Timing Analysis
+engines for determining delay through a netlist. This information is often given
+in interpolated tables for each standard cell, for example in the NLDM model
+describing how delay changes as a function of input transition time and load
+(load capacitance).</p>
+<p>These models and supplied pieces of data are important to keep in mind for
+contrast, as we now ignore it all and do something very simple.</p>
+<h2 id="simple-delay-estimation">Simple Delay Estimation</h2>
+<p>Currently, XLS delay estimation follows a conceptually simple procedure:</p>
+<ul>
+<li>For every operation in XLS (e.g. binary addition):
+    *   For some relevant-seeming set of bitwidths; e.g. <code>{2, 4, 8, 16, ...,
+        2048}</code>
+    *   Find the maximum frequency at which that operation closes timing at that
+        bitwidth, in 100MHz units as determined by the synthesis tool.
+        <sup><a href="#footnote2">2</a></sup> Call the clock period for this frequency
+        <code>t_best</code>. (Note that we currently just use a single process corner /
+        voltage for this sweep.)
+    *   Subtract the clock uncertainty from <code>t_best</code>.
+    *   Record that value in a table (with the keys of the table being operation
+        / bitwidth).</li>
+</ul>
+<p><a name='footnote2'>2</a>: The timing report can provide the delay through a
+path at any clock frequency, but a wrinkle is that synthesis tools potentially
+only start using their more aggressive techniques as you bump up against the
+failure-to-close-timing point -- there it'll be more likely to change the
+structure of the design to make it more delay friendly. The sweep helps to try
+to cajole it in that way.</p>
+<p>Inspecting the data acquired in this way we observe all of the plots consist of
+one or more the following delay components:</p>
+<ul>
+<li>Constant as a function of bitwidth for a given op (e.g. binary-or just
+    requires a single gate for each bit regardless of the width of the inputs).</li>
+<li>Logarithmic as a function of bitwidth (e.g. adders may end up using
+    tree-like structures to minimize delay, single-selector muxes end up using a
+    tree to fan out the selector to the muxes, etc.).</li>
+<li>Linear as a function of bitwidth (e.g., ripple-carry adders and some
+    components of multipliers).</li>
+</ul>
+<p>So given this observation we fit a curve of the form:</p>
+<div class="highlight"><pre><span></span><code>a * bitwidth + b * log_2(bitwidth) + c
+</code></pre></div>
+<p>to the sweep data for each operation, giving us <code>(a, b, c)</code> values to use in our
+XLS delay estimator.</p>
+<p>The utility <code>delay_model_visualizer</code> under the <code>tools</code> directory renders a graph
+of the delay model estimate against the measured data points. This graph for add
+shows a good correspondence to the measured delay.</p>
+<p><img alt="drawing" src="../add2_delay_plot.png" /></p>
+<h3 id="sweeping-multiple-dimensions">Sweeping multiple dimensions</h3>
+<p>Operations with attributes in addition to bitwidth that affect delay are swept
+across multiple dimensions. An example is <code>Op::kOneHotSelect</code> which has
+dimensions of bitwidth and number of cases. For the <code>Op::kOneHotSelect</code> example
+the formula is:</p>
+<div class="highlight"><pre><span></span><code>a * bitwidth + b * log_2(bitwidth) + c * (# of cases) + d * log_2(# of cases) + c
+</code></pre></div>
+<p>Below is plot of delay for <code>Op::kOneHotSelect</code> showing the two dimensions of
+bitwidth and operand count affecting delay:</p>
+<p><img alt="drawing" src="../one_hot_sel_delay_plot.png" /></p>
+<h3 id="sources-of-pessimismoptimism">Sources of pessimism/optimism</h3>
+<p>This simple method has both sources of optimism and pessimism, though we hope to
+employ a method that will be generally conservative, so that users can easily
+close timing and get a close-to-best-achievable result (say, within tens of
+percent) with a single HLS iteration.</p>
+<p>Sources of pessimism (estimate is conservative):</p>
+<ul>
+<li>The operation sweeps mentioned are not bisecting to the picosecond, so there
+    is inherent slop in the measurement on account of sweep granularity.</li>
+<li>We expect, in cycles where multiple dependent operations are present, there
+    would be "K-map style" logic reductions with adjacent operations. For
+    example, because we don't do cell library mapping in XLS delay estimation,
+    something a user wrote that mapped to an AOI21 cell would be the sum of
+    (and+or+invert) delays.</li>
+<li>[Unsure] May there be additional logic branch splitting options and
+    earlier-produced results available to the synthesis tool when there are more
+    operations in the graph (vs a lone critical path measured for a single
+    operation)?</li>
+</ul>
+<p>Sources of optimism (estimate is overeager):</p>
+<ul>
+<li>For purposes of the sweep the outputs of an operation are only loaded by a
+    single capture flop flop -- when operations have fanout the delay will
+    increase.<p>Note that we do account for fanout <em>within</em> individual operations as part of
+  this sweep; e.g. a 128-bit selector fanout (e.g. 128 ways to 128 muxes) for
+  a select is accounted for the in delay timing of the select operation. It is
+  the <em>output</em> logic layer that is only loaded by a single flop in our
+  characterization. Notably because most of these operations turn into trees
+  of logic, there are <span class="arithmatex">\(<span class="arithmatex">\(log_2(bitcount)\)</span>\)</span> layers of logic in which we can
+  potentially smoothly increase drive strength out to the output logic layer,
+  and paths can presumably be replicated by synthesis tools to reduce
+  pointwise fanout when multiple high-level operations are data-dependent
+  within a cycle. (Is it <em>possible</em> for a user to break up their 32-bit select
+  into bitwise pieces in their XLS code to mess with our modeling? Sure, but
+  probably not too expected, so we're currently sort of relying on the notion
+  people are using high level operations instead of compodecomposing them into
+  bitwise pieces in our graph.)</p>
+<p>A potential way to reconcile this output fanout in the future is to do a
+  delay sweep with a high-capacitive fanout (e.g. four flops of load) and then
+  ensure the IR has a maximum fanout of four for our delay estimation.</p>
+</li>
+</ul>
+<ul>
+<li>Wiring delay / load / congestion / length are not estimated. This will need
+    additional analysis / refinement as we run XLS through synthesis tools with
+    advanced timing analysis, as it is certainly not viable for arbitrary
+    designs (tight pipelines may be ok for now, though).</li>
+</ul>
+<h3 id="iterative-refinement">Iterative refinement</h3>
+<p>The caveats mentioned above seem somewhat daunting, but this first cut approach
+appears to work <em>comfortably</em> at target frequenties, in practice, for the
+real-world blocks being designed as XLS "first samples".</p>
+<p>Notably, human RTL designers fail to close timing on a first cut as well -- HLS
+estimations like the above assist in getting a numeric understanding (in lieu of
+an intuitive guess) of something that may close timing on a first cut. As this
+early model fails, we will continue to refine it; however, there is also a
+secondary procedure that can assist as the model improves.</p>
+<p>Let's call the delay estimation described above applied to a program a
+<em>prediction</em> of its delays. Let's call the first prediction we make <code>p0</code>: <code>p0</code>
+will either meet timing or fail to meet timing.</p>
+<p>When we meet timing with <code>p0</code>, there may be additional wins left on the table.
+If we're willing to put synthesis tool runs "in the loop" (say running a "tuner"
+overnight), we can refine XLS's estimates according to the realities of the
+current program, and, for example, try to squeeze as much as possible into as
+few cycles as possible if near-optimality of latency/area/power were a large
+consideration. This loop would generate <code>p1</code>, <code>p2</code>, ... as it refined its model
+according to empirical data observed from the synthesis tool's more refined
+analysis.</p>
+<p>When we fail to close timing with <code>p0</code>, we can feed back the negative slack
+delays for comparison with our estimates and relax estimates accordingly.
+Additionally, an "aggression" knob could be implemented that backs off delay
+estimations geometrically (say via a "fudge factor" coefficient) in order to
+ensure HLS developer time is not wasted unnecessarily to ensure. Once a
+combination of these mechanisms has obtained a design that closes timing, the
+"meeting timing, now refine" procedure can be employed as described above.</p>
+<h3 id="on-hints">On Hints</h3>
+<p>To whatever extent possible, XLS should <em>be</em> the tool that reasons about how to
+target the backend (vs having a tool that sits on top of it and messes with XLS'
+input in an attempt to achieve a result). User-facing hint systems are typically
+very fragile, owing to the fact they don't have easily obeyed semantics. XLS, by
+contrast, knows about its own internals, so can do things with awareness of
+what's happened upstream and what remains to happen downstream.</p>
+<p>By contrast, we <strong>should</strong> continue to add ways for users to provide more
+semantic information / intent as part of their program (e.g. via more high-level
+patterns that make high level structure more clear), and make XLS smarter about
+how to lower those constructs into hardware (and why it should be lowering them
+that way) in the face of some prioritized objectives (power/area/latency).</p>
+<p>That being said, because we're probably trying to produce hardware at a given
+point in time against a given technology, it likely makes sense to permit human
+users to specify things directly (at a point in time), even if those
+specifications might be ignored / handled very differently in the future or
+against different technology nodes. This would be the moral equivalent of what
+existing EDA tools do as a "one-off TCL file" used in a particular design, vs
+something carried from design to design. Recall, though, that the intent of XLS
+is to make things easier to carry from design to design and require fewer
+one-off modifications!</p>
+<h2 id="tools">Tools</h2>
+<p>XLS provides tools for analyzing its delay estimation model. (Note that the
+given IR should be in a form suitable for code generation; e.g. it has run
+through the <code>opt_main</code> binary).</p>
+<div class="highlight"><pre><span></span><code>$ tools/benchmark_main crc32.opt.ir --clock_period_ps=500
+&lt;snip&gt;
+Return value delay: 1362ps
+Critical path entry count: 42
+Critical path:
+   1362ps (+  5ps): not.29: bits[32] = not(xor.205: bits[32], pos=[(0,29,50)])
+   1357ps (+ 20ps): xor.205: bits[32] = xor(concat.195: bits[32], and.196: bits[32], pos=[(0,24,19)])
+   1337ps (+ 15ps): and.196: bits[32] = and(neg.194: bits[32], literal.304: bits[32], pos=[(0,24,33)])
+   1322ps (+134ps): neg.194: bits[32] = neg(concat.191: bits[32], pos=[(0,23,15)])
+&lt;snip&gt;
+    154ps (+ 15ps): and.133: bits[32] = and(neg.131: bits[32], literal.19: bits[32], pos=[(0,24,33)])
+    139ps (+134ps): neg.131: bits[32] = neg(concat.219: bits[32], pos=[(0,23,15)])
+      5ps (+  0ps): concat.219: bits[32] = concat(literal.297: bits[31], bit_slice.214: bits[1], pos=[(0,23,21)])
+      5ps (+  0ps): bit_slice.214: bits[1] = bit_slice(not.208: bits[8], start=0, width=1, pos=[(0,23,21)])
+      5ps (+  5ps): not.208: bits[8] = not(message: bits[8], pos=[(0,20,16)])
+&lt;snip&gt;
+</code></pre></div>
+<p>In addition to the critical path, the cycle-by-cycle breakdown of which
+operations have been scheduled is provided in stdout.</p>
+
+
+
+
+              
+            </article>
+            
+          </div>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="Footer" >
+      
+        
+        <a href="../scheduling/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Overview" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Overview
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../ir_visualization/" class="md-footer__link md-footer__link--next" aria-label="Next: Visualizer" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Visualizer
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.ecf98df9.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.9c69f0bc.min.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
