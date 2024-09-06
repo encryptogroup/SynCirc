@@ -1,0 +1,7 @@
+FROM quay.io/jupyter/base-notebook
+
+USER root
+RUN apt-get update -y
+RUN apt-get install -y curl zip
+
+USER ${NB_UID}
