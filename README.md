@@ -1,4 +1,4 @@
-# FRESH: Framework for Efficient Secure Circuit Synthesis from High-Level Languages
+# SynCirc: Efficient Synthesis of Depth-Optimized Circuits from High-Level Languages
 
 This repository contains the code for our paper. Our framework
 consists of 3 components:
