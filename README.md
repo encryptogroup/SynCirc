@@ -5,7 +5,7 @@ consists of 3 components:
 
 - Yosys[3], an open-source Verilog synthesis suite
 - XLS[0], an open-source High-Level Synthesis toolchain
-- FRESH toolchain, our work providing a convenient development
+- SynCirc toolchain, our work providing a convenient development
   experience for programming multiplicative-depth-optimized MPC
   circuits
 
@@ -48,9 +48,9 @@ needed (exact names may vary in your distribution):
 - `libtinfo5`
 - `python-is-python3`
 
-#### FRESH toolchain
+#### SynCirc toolchain
 
-The FRESH toolchain requires a 0.10.0 release of the Zig[2]
+The SynCirc toolchain requires a 0.10.0 release of the Zig[2]
 compiler. Assuming a x86_64 Linux machine, the following commands will
 download and extract a Zig compiler binary. Binaries for other systems
 are available under https://ziglang.org/download/.
@@ -72,9 +72,9 @@ cd xls
 bazel build -- //xls/dslx:ir_converter_main //xls/tools:opt_main //xls/tools:codegen_main //xls/contrib/xlscc:xlscc
 ```
 
-#### FRESH toolchain
+#### SynCirc toolchain
 
-The following shell command will build the FRESH toolchain. All
+The following shell command will build the SynCirc toolchain. All
 executables will be present in the `zig-out/bin` directory.
 
 ```bash
