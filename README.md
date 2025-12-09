@@ -11,10 +11,10 @@ consists of 3 components:
 
 ## Instructions
 
-We provide a Jupyter notebook `fresh.ipynb` for easy testing of our
+We provide a Jupyter notebook `syncirc.ipynb` for easy testing of our
 circuit compilation workflow. This notebook can be conveniently
 executed in [Google Colab](https://colab.research.google.com) by
-uploading the `fresh.ipynb` notebook.
+uploading the `syncirc.ipynb` notebook.
 
 The Jupyter notebook uses pre-built binaries in order to speed up
 compilation. Information on reproducing these binaries is available in
